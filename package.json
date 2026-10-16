@@ -38,10 +38,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andymccutcheon/promptzilla-mcp.git"
+    "url": "git+https://github.com/andymccutcheon/promptzilla.git"
   },
-  "bugs": "https://github.com/andymccutcheon/promptzilla-mcp/issues",
-  "homepage": "https://github.com/andymccutcheon/promptzilla-mcp#readme",
+  "bugs": "https://github.com/andymccutcheon/promptzilla/issues",
+  "homepage": "https://github.com/andymccutcheon/promptzilla#readme",
   "publishConfig": {
     "access": "public"
   },

@@ -31,4 +31,4 @@ async function main() {
   await server.connect(new StdioServerTransport());
 }
 
-main().catch(error => { process.stderr.write(`promptzilla-mcp: ${error instanceof Error ? error.message : 'Startup failed.'}\n`); process.exitCode = 1; });
+main().catch(error => { process.stderr.write(`promptzilla: ${error instanceof Error ? error.message : 'Startup failed.'}\n`); process.exitCode = 1; });

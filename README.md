@@ -1,8 +1,8 @@
 # Promptzilla
 
 [![npm](https://img.shields.io/npm/v/promptzilla)](https://www.npmjs.com/package/promptzilla)
-[![verify](https://github.com/andymccutcheon/promptzilla-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/promptzilla-mcp/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/promptzilla)](https://github.com/andymccutcheon/promptzilla-mcp/blob/main/LICENSE)
+[![verify](https://github.com/andymccutcheon/promptzilla/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/promptzilla/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/promptzilla)](https://github.com/andymccutcheon/promptzilla/blob/main/LICENSE)
 
 An MCP server built from the five prompt-engineering skills in `skills/`. It
 exposes skill instructions as tools, prompts and resources, and provides a
@@ -80,8 +80,8 @@ skill instructions they started with.
 ## From source
 
 ```sh
-git clone https://github.com/andymccutcheon/promptzilla-mcp.git
-cd promptzilla-mcp
+git clone https://github.com/andymccutcheon/promptzilla.git
+cd promptzilla
 npm ci
 npm run build
 node dist/cli.js --validate

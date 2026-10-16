@@ -12,7 +12,7 @@ test('CLI validates package-relative skills from arbitrary cwd and supports help
   expect((await exec(process.execPath, [cli, '--version'])).stdout).toBe('1.0.0\n');
 });
 test('CLI rejects bad flags and missing skills; explicit flags override env', async () => {
-  await expect(exec(process.execPath, [cli, '--unknown'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('promptzilla-mcp:') });
+  await expect(exec(process.execPath, [cli, '--unknown'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('promptzilla:') });
   await expect(exec(process.execPath, [cli, '--validate'], { env: { ...process.env, PROMPTZILLA_SKILLS_DIR: '/does-not-exist' } })).rejects.toMatchObject({ code: 1 });
   expect((await exec(process.execPath, [cli, '--validate', '--skills-dir', resolve('skills')], { env: { ...process.env, PROMPTZILLA_SKILLS_DIR: '/does-not-exist' } })).stdout).toContain('Validated 5 skills');
 });

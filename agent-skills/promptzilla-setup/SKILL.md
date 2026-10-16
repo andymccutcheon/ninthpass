@@ -57,7 +57,7 @@ Ask only if the user hasn't implied one:
 
 ## Mode B — From source
 
-1. `git clone https://github.com/andymccutcheon/promptzilla-mcp.git && cd promptzilla-mcp`
+1. `git clone https://github.com/andymccutcheon/promptzilla.git && cd promptzilla`
 2. `npm ci && npm run build && node dist/cli.js --validate`
 3. Point the client at `node <absolute-repo-path>/dist/cli.js` (stdio).
 4. Run the full verification if the user will modify code: `npm run check`.
