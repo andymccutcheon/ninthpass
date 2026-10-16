@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+runs/
+*.tgz
+.env*
+.DS_Store
+__pycache__/
+.cloudflare/
+.wrangler/
+.dev.vars*
+.secrets/
+worker/skills.generated.json

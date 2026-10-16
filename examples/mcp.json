@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "promptzilla": {
+      "command": "npx",
+      "args": ["-y", "promptzilla-mcp"]
+    }
+  }
+}

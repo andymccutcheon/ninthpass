@@ -1,0 +1,84 @@
+{
+  "name": "promptzilla",
+  "version": "1.0.0",
+  "description": "Skills-backed MCP prompts, tools, and a durable prompt optimization pipeline. Local stdio server plus optional self-hosted Cloudflare Workers deployment.",
+  "type": "module",
+  "bin": {
+    "promptzilla": "dist/cli.js"
+  },
+  "exports": {
+    ".": "./dist/server.js"
+  },
+  "files": [
+    "dist",
+    "skills/**/*.md",
+    "skills/**/*.py",
+    "agent-skills",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "PLAN.md",
+    "TEST-RESULTS.md",
+    "CLOUDFLARE.md"
+  ],
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "prompt-engineering",
+    "prompts",
+    "llm",
+    "ai",
+    "claude",
+    "agents",
+    "cloudflare-workers"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andymccutcheon/promptzilla-mcp.git"
+  },
+  "bugs": "https://github.com/andymccutcheon/promptzilla-mcp/issues",
+  "homepage": "https://github.com/andymccutcheon/promptzilla-mcp#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/generate-skills.mjs",
+    "start": "node dist/cli.js",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:helpers": "python3 -B -m unittest discover -s tests -p '*_test.py' -v",
+    "test:types": "tsc -p tsconfig.tests.json",
+    "test:package": "node scripts/package-smoke.mjs",
+    "test:worker-types": "tsc -p tsconfig.worker.json",
+    "worker:build": "npm run build && cf build",
+    "worker:secrets": "node scripts/prepare-cloudflare-secrets.mjs",
+    "worker:deploy": "npm run worker:build && cf deploy --prebuilt --secrets-file .secrets/cloudflare-secrets.json",
+    "worker:verify": "node --import tsx scripts/remote-smoke.mjs",
+    "check": "npm run build && npm run test:types && npm run test:worker-types && npm run test:coverage && npm run test:helpers",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.3.1",
+    "yaml": "^2.9.1",
+    "zod": "^4.2.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^2.0.0-beta.v.0",
+    "@cloudflare/workers-types": "^5.20261016.1",
+    "@modelcontextprotocol/client": "2.3.1",
+    "@types/node": "^26.0.0",
+    "@vitest/coverage-v8": "^5.0.5",
+    "cf": "^1.0.0-beta.17",
+    "esbuild": "^0.28.2",
+    "miniflare": "^5.20261012.0-beta",
+    "tsx": "^4.20.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.5"
+  }
+}
