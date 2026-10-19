@@ -33,7 +33,7 @@ export class PipelineEngine {
     }
     input.priorities = run.priorities;
     input.user_decisions = run.user_decisions.join('\n');
-    run.dispatch = { id: crypto.randomUUID(), skill, stage, instructions: `${run.skill_sources[skill]}\n\n## MCP stage brief\n${rules.join('\n')}`, input, attempt, ...(validationError ? { validation_error: validationError } : {}) };
+    run.dispatch = { id: crypto.randomUUID(), skill, stage, instructions: `${run.skill_sources[skill]}\n\n## Stage brief\n${rules.join('\n')}`, input, attempt, ...(validationError ? { validation_error: validationError } : {}) };
   }
 
   async start(raw: z.input<typeof StartSchema>): Promise<Run> {
@@ -64,13 +64,21 @@ export class PipelineEngine {
     return `${round === 0 ? '02' : round === 1 ? '04' : round === 2 ? '04b' : '04c'}-judge-pass${round + 1}${suffix}.md`;
   }
 
+  private provisionalName(run: Run) {
+    if (!run.artifacts.some(a => a.name === '05-provisional.md')) return '05-provisional.md';
+    let index = 2;
+    while (run.artifacts.some(a => a.name === `05-provisional-${index}.md`)) index += 1;
+    return `05-provisional-${index}.md`;
+  }
+
   private provisional(run: Run, reason: string) {
     run.reason = reason;
     delete run.dispatch;
     const best = [...run.history].sort((a, b) => b.score - a.score)[0];
     if (best) {
-      this.artifact(run, '05-provisional.md', 'provisional', best.prompt);
-      run.final = { file: '05-provisional.md', text: best.prompt, approved: false, label: `Provisional; ${reason}` };
+      const file = this.provisionalName(run);
+      this.artifact(run, file, 'provisional', best.prompt);
+      run.final = { file, text: best.prompt, approved: false, label: `Provisional; ${reason}` };
     }
   }
 
@@ -134,9 +142,9 @@ export class PipelineEngine {
           run.status = 'capped';
           this.provisional(run, 'Four scoring rounds reached without Judge STOP.');
         } else if (run.history.length >= 3 && run.history.at(-1)!.score <= run.history.at(-2)!.score) {
+          const reason = 'Score did not improve after two rewrites. Explicit user decision required.';
           run.status = 'paused';
-          run.reason = 'Score did not improve after two rewrites. Explicit user decision required.';
-          delete run.dispatch;
+          this.provisional(run, reason);
         } else this.dispatch(run, 'rewrite');
       }
       return run;

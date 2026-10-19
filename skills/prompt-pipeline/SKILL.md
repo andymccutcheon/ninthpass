@@ -7,6 +7,8 @@ description: Runs a prompt through Metapod (generate), Judge Dredd (score) and B
 
 Orchestrates three skills: `metapod`, `judge-dredd` and `brian-spillner` (sibling folders: `../metapod/SKILL.md`, `../judge-dredd/SKILL.md`, `../brian-spillner/SKILL.md`). It orchestrates only. It does not score, rewrite or generate prompts itself.
 
+> **Prefer the CLI when it is installed.** `promptzilla run --request "..."` implements this same workflow with durable run state, one fresh process per stage, and automatic Markdown export on STOP. Use this skill when you are orchestrating manually in a chat host that cannot run the CLI.
+
 ## Modes
 
 **Full:** the user has an idea or request, not a prompt.
