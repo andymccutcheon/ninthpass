@@ -70,12 +70,32 @@ test('pauses after two non-improving rewrites and requires explicit decision', a
   v = await submit(v.id, judge(7));
   expect(v.status).toBe('paused');
   expect(v.dispatch).toBeUndefined();
+  expect(v.final?.approved).toBe(false);
+  expect(v.final?.file).toBe('05-provisional.md');
+  expect(v.reason).toContain('did not improve');
   await expect(pipeline.resume(v.id, '')).rejects.toThrow();
   v = await pipeline.resume(v.id, 'Continue despite plateau; preserve [TBD].');
   expect(v.dispatch?.input.user_decisions).toContain('Continue despite plateau');
   v = await submit(v.id, rewrite(prompt));
   v = await submit(v.id, judge(9));
   expect(v.status).toBe('completed');
+});
+
+test('a resumed plateau that caps writes a second, uniquely named provisional', async () => {
+  let v = await pipeline.start({ mode: 'optimize-only', input: prompt });
+  v = await submit(v.id, judge(8));
+  v = await submit(v.id, rewrite(prompt));
+  v = await submit(v.id, judge(8));
+  v = await submit(v.id, rewrite(prompt));
+  v = await submit(v.id, judge(8));
+  expect(v.status).toBe('paused');
+  expect(v.final?.file).toBe('05-provisional.md');
+  v = await pipeline.resume(v.id, 'Continue one more round.');
+  v = await submit(v.id, rewrite(prompt));
+  v = await submit(v.id, judge(7));
+  expect(v.status).toBe('capped');
+  expect(v.final?.file).toBe('05-provisional-2.md');
+  expect(v.final?.approved).toBe(false);
 });
 
 test('malformed stages retry once then block and retain previous candidate', async () => {

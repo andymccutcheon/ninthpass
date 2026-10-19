@@ -17,7 +17,6 @@ jobs:
           python-version: '3.x'
       - run: npm ci
       - run: npm run check
-      - run: npm run worker:build
       - run: npm audit --omit=dev
       - run: npm pack --dry-run
       - run: npm run test:package

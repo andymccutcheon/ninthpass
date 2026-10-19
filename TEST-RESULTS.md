@@ -1,113 +1,88 @@
-# Promptzilla — verification results
+# Test results — Promptzilla v2
 
-Latest verification: **2026-10-15/16 (local time)** for the public npm release
-(`promptzilla` package). Runtime: official MCP TypeScript SDK server/client
-**2.3.1**, `cf` 1.0.0-beta.17, Cloudflare Vite integration.
+**Measured 2026-10-19** on macOS (Darwin), Node.js 22.23.1, npm 10.9.8.
 
-## Release verification (npm package `promptzilla`)
+## Automated suite
 
-| Check | Actual result |
+Command: `npm run check`
+
+| Area | Result |
 |---|---|
-| Production, tests and Worker/config TypeScript checks | PASS |
-| Full checks on installed Node 22.23.1 and Node 26.8.1 | PASS on both |
-| Full TypeScript/Vitest suite | **33 passed across 7 files**, no skipped tests |
-| Original Python helper suite | **4 passed** |
-| Latest measured coverage | **96.49% statements, 92.54% branches, 100% functions, 99.44% lines** |
-| `npm run test:package` (tarball → clean temp install → real stdio run) | PASS — 9 bundled assets, 5 prompts, 13 tools, `.bin/promptzilla --validate`, byte-exact final artifact |
-| `npm pack --dry-run` | PASS — `promptzilla-1.0.0.tgz`, 59 files, ~64 kB; credentials, `.secrets/`, node_modules, build output excluded |
-| Dependency audit | **0 known vulnerabilities** |
-| Anonymization scan | PASS — no personal paths, emails, account IDs, deployment URLs or owner names in tracked files |
-| `npm publish --access public` | PASS — **promptzilla@1.0.0** live at https://www.npmjs.com/package/promptzilla (tag `latest`, license MIT) |
-| Registry metadata | PASS — version 1.0.0 published 2026-10-16T03:55:04Z; republish correctly refused |
-| `npx -y promptzilla@latest` from clean directory | PASS — `--validate` (5 skills, 9 assets), `--version`, `--help` |
-| Real MCP client → npx-installed server | PASS — **13 tools, 5 prompts, 15 resources** over stdio from the public registry |
+| Vitest files | **10 passed** |
+| Vitest tests | **59 passed** |
+| Statements | **94.10%** (591/628) |
+| Branches | **86.61%** (369/426) |
+| Functions | **95.49%** (106/111) |
+| Lines | **97.74%** (476/487) |
+| Python helper tests | **4 passed** (`stage_control.py`, `exact_replace.py`) |
+| TypeScript build | PASS |
+| Test type-check | PASS |
 
-## Cloudflare extension verification
+The suite covers:
 
-| Check | Actual result |
-|---|---|
-| `cf build`, `cf deploy --dry-run` | PASS |
-| Live Worker deployment | PASS (private deployment; endpoint intentionally not recorded in this public repo) |
-| Cloudflare secret inspection | `PROMPTZILLA_CLIENTS` confirmed as `secret_text`; only credential hashes uploaded |
-| Live remote SDK client | PASS — 13 tools, 5 prompts, 9 source assets |
-| Live authenticated Full and optimize-only fixture runs | PASS — 8 → 9/STOP, byte-exact final resource retrieval |
-| New client/session reading existing live runs | PASS |
-| Live missing/invalid credentials | Rejected with `401` |
+- Catalog discovery, YAML validation, source pinning, malformed and symlinked catalogs.
+- Judge score/verdict consistency, Metapod headings, Brian BODY/checklist contracts,
+  exact all-or-nothing replacements.
+- Full and optimize-only runs, STOP, four-round cap, plateau pause, one retry then block,
+  stale dispatches, reused execution IDs, concurrent submissions, restart recovery,
+  tampered artifacts and symlinks.
+- Approved and provisional Markdown export, slugs, collisions, symlink and non-directory
+  output paths.
+- Install detection, multi-host install, dry-run, bundled skills, symlink rejection.
+- Worker command construction, OpenCode JSON parsing, packet rendering, stdin handling,
+  non-zero exits, missing binaries, timeouts, output caps and aborts.
+- CLI help, version, validation, list, install, start, run, status, submit, pause, resume,
+  fix, export and fixture test.
 
-The Workers runtime tests use workerd/Miniflare with actual SQLite Durable Object
-storage. They cover per-owner authorization, concurrent submissions, user pause
-and retry budgets, four-round cap, exact replacements with fresh confirmation,
-and recovery of a multi-megabyte Unicode run after a full runtime shutdown and
-restart using the same durable storage. Separate auth tests cover missing,
-malformed and ambiguous configuration failing closed with `503`.
+## Packaged install
 
-Coverage is measured for Node-executed shared modules and authentication logic;
-the remaining Worker-only code runs in a separate workerd process and is verified
-behaviorally rather than counted as Node V8 coverage.
+Command: `npm run test:package`
 
----
+**PASS** — packs the tarball, installs it into a clean temporary prefix, and verifies:
 
-## Original local-server verification
+- 9 bundled assets (five `SKILL.md` files, `DRY-RUN.md`, `VERIFICATION.md`, two `.py`
+  helpers), no `worker/` or run data.
+- `promptzilla --version` prints `2.0.0`.
+- `promptzilla validate` prints `Validated 5 skills and 9 source assets.`
+- `promptzilla install --dir <temp>` installs all five skills and the Python helpers.
+- A fixture Full run completes, is approved at 9/10, and writes the Markdown prompt.
 
-Date: **2026-10-15**. Environment: macOS, Node **26.8.1**, npm **11.19.0**.
+## Live pipeline
 
-| Command/check | Actual result |
-|---|---|
-| Initial `npm test` before implementation | Failed: catalog, validation and pipeline modules did not yet exist (red phase) |
-| `npm run build` | PASS — strict TypeScript production build |
-| `npm run test:types` | PASS — source, tests and Vitest configuration typechecked |
-| `npm run test:coverage` | PASS — **23 tests in 5 test files**, no skipped tests |
-| `npm run test:helpers` | PASS — **4 Python tests** against the unchanged original helpers |
-| `node dist/cli.js --validate` | PASS — **5 skills, 9 source assets** |
-| Real SDK client → compiled stdio server | PASS — initialization, discovery, tool/prompt/resource calls, Full and optimize-only fixture workflows, byte-exact final resource retrieval |
-| `npm run test:package` | PASS — packed and installed in a clean temporary directory, 9 bundled skill/support assets, 5 prompts, 13 tools, installed CLI validation, real stdio fixture run and final artifact round-trip |
-| `npm pack --dry-run` | PASS — compiled CLI and original source skills included; Python bytecode excluded from final package file patterns |
-| `npm audit` | PASS — **0 known vulnerabilities** at verification time |
-
-## Behavior exercised
-
-- All five original skills and supporting files discoverable; exact skill-source
-  retrieval, keyword search, invalid/missing metadata and name/folder mismatch.
-- Standalone skill execution packets, five MCP prompts with separated caller
-  data, catalog resources and run artifact resources.
-- Both pipeline modes; Metapod → Judge → Brian → Judge; unchanged pass-1 STOP
-  export; latest rewrite BODY carried forward without checklist contamination.
-- DEFERRED recommendations carried separately; four-round hard cap; best scored
-  candidate exported as provisional; plateau pause after two rewrites; explicit
-  user decisions preserved on resume.
-- One validation retry per stage, immutable rejected outputs, stale dispatch
-  rejection, distinct worker ID checks and fresh-context attestation requirement.
-- User pause/resume preserving stage and retry budget; state recovery after a
-  server/controller restart; pinned skill instructions.
-- Exact fixes authorized by literal Judge replacement pairs, substring-spoof
-  rejection, zero/multiple-match rejection, CRLF/Unicode preservation,
-  all-or-nothing replacement, fresh diff-only confirmation, failed and malformed
-  confirmation remaining unapproved.
-- Concurrent submissions allow one advancement; traversal and symlink rejection;
-  invalid/oversized input rejection; tampered artifacts detected; missing derived
-  artifacts reconstructed from canonical state.
-- Real CLI processes from another working directory; help/version; invalid flags;
-  missing catalog failures; flags overriding environment configuration.
-- Original Python helpers: BYTE-preserving BODY extraction, overwrite refusal,
-  STOP/cap/plateau bookkeeping, invalid histories, exact replacement rollback.
-
-## Test boundaries
-
-Stage outputs are **authored deterministic fixtures**. No model API was called,
-no model-generated score was claimed, and these tests do not prove real prompt
-quality, factual fidelity or independent AI-worker isolation. The host supplies
-the actual model execution and fresh worker contexts. The server records their
-provenance and validates structural contracts.
-
-## Reproduce
-
-From the project root with Node.js 22.12+:
+Command:
 
 ```sh
-npm ci
-npm run check
-npm run test:package
-npm audit
-node dist/cli.js --validate
-npx -y promptzilla --validate   # after npm publication
+promptzilla test --live --worker opencode --model deepseek/deepseek-flash
 ```
+
+Execution: OpenCode 1.18.35, DeepSeek Flash, Full mode.
+
+| Run | Request | Scores | Terminal state | Export |
+|---|---|---|---|---|
+| `4cd2abf2-51ec-462d-a4eb-6155be65f94c` | meeting-notes summarizer, five bullets | 8 CONTINUE, 8 CONTINUE, 8 CONTINUE | paused (plateau) | `.../write-a-prompt-for-a-meeting-notes-summarizer.provisional.md` |
+| `cb6da055-02d8-4b08-84e4-4f7e5e46c865` | same request, resumed | 8, 8, 8, 8 | capped (four rounds) | `.../write-a-prompt-for-a-meeting-notes-summarizer-that.provisional.md` |
+
+Both runs exercised the real skill files through separate OpenCode processes:
+
+- Metapod produced a System Prompt and Task Prompt that passed the heading contract.
+- Judge produced canonical section ratings, a score/verdict pair and numbered
+  recommendations on every pass.
+- Brian produced a complete BODY between the markers plus a checklist for every
+  recommendation; Judge re-scored the body without the checklist.
+- The plateau pause produced a provisional export; `run --resume` continued the same run,
+  then the four-round cap produced a second provisional export.
+- The CLI exited `0` for the live test, `2` for the plateau pause, and `3` for the capped
+  run.
+
+The live test passes when the pipeline reaches a terminal or decision state with a final
+or provisional prompt. A **blocked** run is a failure: it means the model could not satisfy
+a stage contract twice.
+
+## What these tests do not prove
+
+- Prompt quality. Judge legitimately capped both live runs at 8; the pipeline correctly
+  refused to approve them.
+- That every model will satisfy the stage contracts. The validators are strict by design,
+  and a model that cannot follow the output shape will block after one retry.
+- Independent isolation in manual mode. The CLI's built-in workers are separate processes;
+  manual `submit` callers attest isolation themselves.
