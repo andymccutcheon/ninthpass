@@ -27,10 +27,10 @@ Result: **PASS**. `skills/prompt-pipeline/SKILL.md` is 98 lines (~430 words), un
 
 ## Test 2 — Optimize-only dry run on the tiny prompt
 
-`00-original.md` saved byte for byte at `runs/2026-10-15-sam-meeting-notes/00-original.md`:
+`00-original.md` saved byte for byte at `runs/2026-10-15-alex-meeting-notes/00-original.md`:
 
 ```
-You are a meeting-notes summarizer for Sam Lee ([TITLE: Sam to choose]). Summarize notes into five bullets. Never invent names or dates; use [TBD]. Keep Sam's wording for quotes. Do not send anything without Sam's review.
+You are a meeting-notes summarizer for Alex Morgan ([TITLE: Alex to choose]). Summarize notes into five bullets. Never invent names or dates; use [TBD]. Keep Alex's wording for quotes. Do not send anything without Alex's review.
 ```
 
 Mode chosen: Optimize-only (input is a prompt the user wrote/pasted).
@@ -42,10 +42,10 @@ Stage files produced, in order, each stage in a separate subagent/fresh context 
 | `00-original.md` | Orchestrator | User's prompt, byte for byte |
 | `02-judge-pass1.md` | Judge | Overall 5/10, Verdict: CONTINUE, 5 numbered recs with exact old→new wording; each section justification cites a quote from the prompt |
 | `03-brian-rewrite.md` | Brian | BODY markers once each, BEGIN first; Rec-application checklist: recs 1, 3, 4, 5 APPLIED; rec 2 DEFERRED (quote-rule reading needs a user answer); 0 CUT lines |
-| `04-judge-pass2.md` | Judge | Overall 7/10, Verdict: CONTINUE; fidelity table confirms `Sam Lee`, `[TITLE: Sam to choose]`, `five bullets`, `[TBD]`, quote rule and review gate all preserved verbatim; no invented facts |
-| `03b-brian-rewrite.md` | Brian | APPLIED rec 2 ("Return the draft to Sam."); DEFERRED recs 1 and 3 (awaiting user answers); no user facts filled or invented |
+| `04-judge-pass2.md` | Judge | Overall 7/10, Verdict: CONTINUE; fidelity table confirms `Alex Morgan`, `[TITLE: Alex to choose]`, `five bullets`, `[TBD]`, quote rule and review gate all preserved verbatim; no invented facts |
+| `03b-brian-rewrite.md` | Brian | APPLIED rec 2 ("Return the draft to Alex."); DEFERRED recs 1 and 3 (awaiting user answers); no user facts filled or invented |
 
-**Outcome:** Judge never issued STOP. Scores: 5/10 → 7/10 → 8/10, all CONTINUE. The run stopped at round 3 (below the 4-round cap) because rec 1 (resolve the quote rule) is blocked on a user answer — per Directive 2, the orchestrator does not invent a reading and asks the user only when the answer changes the work. No `05-final.md` exists yet (correct: extraction happens only at STOP). Open item carried to the user: choose quote-rule reading (a) "Quote Sam verbatim." or (b) "Keep quotes verbatim from Sam's notes."
+**Outcome:** Judge never issued STOP. Scores: 5/10 → 7/10 → 8/10, all CONTINUE. The run stopped at round 3 (below the 4-round cap) because rec 1 (resolve the quote rule) is blocked on a user answer — per Directive 2, the orchestrator does not invent a reading and asks the user only when the answer changes the work. No `05-final.md` exists yet (correct: extraction happens only at STOP). Open item carried to the user: choose quote-rule reading (a) "Quote Alex verbatim." or (b) "Keep quotes verbatim from Alex's notes."
 
 Result: **PASS** (run executed correctly and stopped per rules; the only missing artifact, `05-final.md`, is conditional on STOP which requires the user's quote-rule decision).
 

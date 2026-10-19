@@ -1,4 +1,4 @@
-export const prompt = 'You summarize notes for Sam Lee. Keep [TBD] and never send without review.\r\n';
+export const prompt = 'You summarize notes for Alex Morgan. Keep [TBD] and never send without review.\r\n';
 export const generated = `=== SYSTEM PROMPT ===
 Primary Role
 Summarize meeting notes.

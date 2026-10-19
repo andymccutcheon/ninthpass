@@ -1,5 +1,7 @@
 # Promptzilla
 
+**Site:** [promptzilla.amccutcheon.com](https://promptzilla.amccutcheon.com)
+
 [![npm](https://img.shields.io/npm/v/promptzilla)](https://www.npmjs.com/package/promptzilla)
 [![verify](https://github.com/andymccutcheon/promptzilla/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/promptzilla/actions/workflows/ci.yml)
 [![license](https://img.shields.io/npm/l/promptzilla)](https://github.com/andymccutcheon/promptzilla/blob/main/LICENSE)
@@ -10,6 +12,17 @@ process per stage.
 
 Promptzilla does not call a model API itself and stores no credentials. The worker you
 choose — OpenCode, Claude Code or Codex — already has its own authentication.
+
+## Quick start
+
+```sh
+npx promptzilla install
+npx promptzilla run --request "Write a prompt for a meeting-notes summarizer"
+```
+
+`install` copies the five skills into the agent hosts it detects. `run` executes the full
+Metapod → Judge Dredd → Brian Spillner loop and writes the approved prompt to
+`./prompts/<slug>.md`.
 
 ## Install the skills
 

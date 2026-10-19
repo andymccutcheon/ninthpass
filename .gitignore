@@ -3,7 +3,33 @@ dist/
 coverage/
 runs/
 prompts/
+.promptzilla/
 *.tgz
+*.log
+
+# Local environment and credentials
 .env*
+.dev.vars*
+.secrets/
+.npmrc
+.direnv/
+.venv/
+venv/
+*.pem
+*.key
+*.p12
+
+# Local tool state
+.cloudflare/
+.wrangler/
+.vscode/
+.idea/
+*.sqlite
+*.sqlite3
+*.db
+
+# OS and Python
 .DS_Store
+._*
 __pycache__/
+*.py[cod]

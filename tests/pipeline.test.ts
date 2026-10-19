@@ -126,7 +126,7 @@ test('rejects stale dispatches, reused workers, false isolation and concurrent s
 test('STOP fixes require Judge-authorized pairs and fresh diff-only confirmation', async () => {
   let v = await pipeline.start({ mode: 'optimize-only', input: prompt });
   v = await submit(v.id, judge(9));
-  await expect(pipeline.applyFixes(v.id, [{ old: 'Sam', new: 'Bob' }])).rejects.toThrow(/Judge/i);
+  await expect(pipeline.applyFixes(v.id, [{ old: 'Alex', new: 'Bob' }])).rejects.toThrow(/Judge/i);
   await expect(pipeline.applyFixes(v.id, [{ old: 'note', new: 'meeting' }])).rejects.toThrow(/Judge/i);
   v = await pipeline.applyFixes(v.id, [{ old: 'notes', new: 'meeting notes' }]);
   expect(v.final?.approved).toBe(false);

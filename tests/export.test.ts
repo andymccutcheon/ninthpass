@@ -34,7 +34,7 @@ test('approved STOP writes a clean Markdown prompt with no frontmatter', async (
   run = await submit(run.id, judge(9));
   const exported = await exportRun(run, join(root, 'prompts'));
   expect(exported.approved).toBe(true);
-  expect(exported.path).toMatch(/prompts\/you-summarize-notes-for-sam-lee-keep-tbd\.md$/);
+  expect(exported.path).toMatch(/prompts\/you-summarize-notes-for-alex-morgan-keep-tbd\.md$/);
   expect(await readFile(exported.path, 'utf8')).toBe(prompt);
 });
 
