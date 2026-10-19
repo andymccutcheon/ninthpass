@@ -1,4 +1,4 @@
-import { cp, lstat, mkdir, readdir } from 'node:fs/promises';
+import { cp, lstat, mkdir, readdir, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 export type InstallTarget = 'claude' | 'opencode' | 'agents';
 
 export const INSTALL_TARGETS: InstallTarget[] = ['claude', 'opencode', 'agents'];
+export const LEGACY_SKILLS = ['tasker', 'metapod', 'judge-dredd', 'brian-spillner', 'prompt-pipeline'];
 
 export interface InstallOptions {
   targets?: InstallTarget[];
@@ -77,6 +78,17 @@ export async function installSkills(options: InstallOptions = {}): Promise<Insta
   for (const { target, directory } of targets) {
     if (!options.dryRun) {
       await mkdir(directory, { recursive: true, mode: 0o700 });
+      for (const legacy of LEGACY_SKILLS) {
+        if (skills.includes(legacy)) continue;
+        const legacyDirectory = join(directory, legacy);
+        try {
+          if ((await lstat(join(legacyDirectory, 'SKILL.md'))).isFile()) {
+            await rm(legacyDirectory, { recursive: true, force: true });
+          }
+        } catch {
+          // No legacy copy in this target.
+        }
+      }
       for (const skill of skills) {
         await cp(join(source, skill), join(directory, skill), {
           recursive: true,

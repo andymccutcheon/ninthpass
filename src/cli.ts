@@ -28,7 +28,7 @@ Skills
 
 Pipeline
   start                 Create a run and print its first dispatch (manual mode)
-  run                   Run Metapod, Judge Dredd and Brian Spillner to a terminal state
+  run                   Run Compose, Judge and Revise to a terminal state
   status <run-id>       Show a run, its score history and the next dispatch
   submit <run-id>       Submit one stage output (manual mode)
   pause <run-id>        Pause an active stage for a user decision

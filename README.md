@@ -21,7 +21,7 @@ npx promptzilla run --request "Write a prompt for a meeting-notes summarizer"
 ```
 
 `install` copies the five skills into the agent hosts it detects. `run` executes the full
-Metapod → Judge Dredd → Brian Spillner loop and writes the approved prompt to
+Compose → Judge → Revise loop and writes the approved prompt to
 `./prompts/<slug>.md`.
 
 ## Install the skills
@@ -42,7 +42,9 @@ one it finds:
 | Shared agents | `~/.agents/skills/<skill>/` |
 
 If none are found it installs to Claude Code. Re-run the same command to update; the five
-skill folders are replaced. Use `--target`, `--dir` or `--dry-run` for control:
+skill folders are replaced. Upgrading from the pre-rename release also removes the five
+legacy folders (`tasker`, `metapod`, `judge-dredd`, `brian-spillner`, `prompt-pipeline`)
+when they are present. Use `--target`, `--dir` or `--dry-run` for control:
 
 ```sh
 npx promptzilla install --target all
@@ -51,14 +53,14 @@ npx promptzilla install --dir ./.claude/skills
 npx promptzilla install --dry-run
 ```
 
-The installed skills are `tasker`, `metapod`, `judge-dredd`, `brian-spillner` and
-`prompt-pipeline`. Supporting files for the manual pipeline (`DRY-RUN.md`, the Python
-helpers) are installed with `prompt-pipeline`.
+The installed skills are `brief`, `compose`, `judge`, `revise` and
+`loop`. Supporting files for the manual pipeline (`DRY-RUN.md`, the Python
+helpers) are installed with `loop`.
 
 ## Run the pipeline
 
 Full mode turns a rough request into a prompt, then scores and rewrites it until Judge
-Dredd returns STOP at 9 or higher:
+returns STOP at 9 or higher:
 
 ```sh
 npx promptzilla run --request "Write a prompt for a meeting-notes summarizer that returns five bullets"
@@ -156,23 +158,23 @@ exactly in a Judge recommendation, and a fresh Judge confirms the diff before ap
 
 | Skill | Job |
 |---|---|
-| `tasker` | Turn a rough task assignment into an execution-ready instruction |
-| `metapod` | Turn a request into a System Prompt and a Task Prompt |
-| `judge-dredd` | Score a prompt on a locked 0–10 rubric; STOP at 9+ |
-| `brian-spillner` | Rewrite a prompt by applying every numbered recommendation |
-| `prompt-pipeline` | Orchestrate the three pipeline skills manually |
+| `brief` | Turn a rough task assignment into an execution-ready instruction |
+| `compose` | Turn a request into a System Prompt and a Task Prompt |
+| `judge` | Score a prompt on a locked 0–10 rubric; STOP at 9+ |
+| `revise` | Rewrite a prompt by applying every numbered recommendation |
+| `loop` | Orchestrate the three pipeline skills manually |
 
 The installed files are the source of truth. The CLI pins each run to the exact skill
 text it started with, so editing a skill mid-run cannot change the current run.
 
 ## Pipeline rules
 
-- **Metapod** must return one System Prompt and one Task Prompt with all required
+- **Compose** must return one System Prompt and one Task Prompt with all required
   headings. It never performs the requested task.
-- **Judge Dredd** returns section ratings with quoted evidence, one overall rating, a
+- **Judge** returns section ratings with quoted evidence, one overall rating, a
   STOP or CONTINUE verdict, and numbered recommendations. STOP is valid only at 9 or
   higher; CONTINUE needs 3–5 recommendations.
-- **Brian Spillner** returns the complete rewrite between one BEGIN and one END BODY
+- **Revise** returns the complete rewrite between one BEGIN and one END BODY
   marker plus a checklist accounting for every recommendation. Judge re-scores the body
   without seeing the checklist.
 - A scoring round starts with Judge. Pass 1 counts toward the four-round cap.

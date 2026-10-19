@@ -19,9 +19,9 @@ async function shim(name: string, body: string): Promise<string> {
 
 const request: StageRequest = {
   run_id: 'run',
-  skill: 'judge-dredd',
+  skill: 'judge',
   stage: 'judge',
-  instructions: '# Judge Dredd',
+  instructions: '# Judge',
   input: { prompt: 'Keep [TBD].' },
 };
 

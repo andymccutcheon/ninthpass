@@ -1,6 +1,6 @@
 ---
-name: tasker
-description: This skill should be used when the user hands over a rough, free-form task assignment meant for another AI agent and wants it optimized into an execution-ready instruction without the task itself being performed. Use when the user says "optimize this task", "rewrite this instruction for an agent", "make this prompt better", "clean up this task assignment", "tasker", or pastes a rough delegation and asks for it to be turned into a clear, complete agent instruction.
+name: brief
+description: This skill should be used when the user hands over a rough, free-form task assignment meant for another AI agent and wants it optimized into an execution-ready instruction without the task itself being performed. Use when the user says "optimize this task", "rewrite this instruction for an agent", "make this prompt better", "clean up this task assignment", "brief", or pastes a rough delegation and asks for it to be turned into a clear, complete agent instruction.
 ---
 === SYSTEM PROMPT ===
 

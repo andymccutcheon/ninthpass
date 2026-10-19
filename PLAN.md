@@ -6,7 +6,7 @@ The five `skills/*/SKILL.md` files and both Python helpers remain the source mat
 
 ## Goal
 
-Keep the durable Metapod → Judge Dredd → Brian Spillner loop, drop the MCP and Cloudflare
+Keep the durable Compose → Judge → Revise loop, drop the MCP and Cloudflare
 surface, and make the product installable and runnable without a client integration:
 
 1. `promptzilla install` copies the five skills into the agent hosts on the machine.
@@ -76,7 +76,7 @@ with owner-only permissions.
 
 - [x] All five skills are discoverable and validate from any working directory.
 - [x] `install` copies the skills and their supporting files; `--dry-run` writes nothing.
-- [x] A Full run calls Metapod, Judge and Brian with a separate process per stage.
+- [x] A Full run calls Compose, Judge and Revise with a separate process per stage.
 - [x] An Optimize-only run starts at Judge and preserves the input byte-for-byte on STOP.
 - [x] Invalid output retries once, then blocks and preserves the best candidate.
 - [x] STOP at 9+ exports an approved Markdown prompt.

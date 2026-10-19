@@ -7,7 +7,7 @@ import sys
 import tempfile
 import unittest
 
-SCRIPTS = Path(__file__).resolve().parents[1] / "skills/prompt-pipeline/scripts"
+SCRIPTS = Path(__file__).resolve().parents[1] / "skills/loop/scripts"
 spec = importlib.util.spec_from_file_location("stage_control", SCRIPTS / "stage_control.py")
 control = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(control)
@@ -46,7 +46,7 @@ class SourceHelpersTest(unittest.TestCase):
 
     def test_extract_cli_refuses_overwrite(self):
         with tempfile.TemporaryDirectory() as root:
-            source, target = Path(root) / "brian.md", Path(root) / "final.md"
+            source, target = Path(root) / "revise.md", Path(root) / "final.md"
             source.write_bytes(b"<!-- BEGIN BODY -->exact\r\n<!-- END BODY -->")
             command = [sys.executable, str(SCRIPTS / "stage_control.py"), "extract", str(source), str(target)]
             self.assertEqual(subprocess.run(command, capture_output=True).returncode, 0)

@@ -1,9 +1,9 @@
 ---
-name: judge-dredd
+name: judge
 description: Scores a system prompt on a locked 0-10 rubric and returns a scorecard with quoted evidence, an overall rating, a STOP or CONTINUE verdict and numbered recommendations. Use when a prompt needs an independent evaluation, when comparing prompts, or when re-scoring a rewrite. It evaluates only; it never rewrites the prompt or does the prompt's task.
 ---
 
-# Judge Dredd
+# Judge
 
 ## Purpose
 

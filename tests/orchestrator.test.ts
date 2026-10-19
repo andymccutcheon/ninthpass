@@ -28,7 +28,7 @@ class ScriptedWorker implements Worker {
   }
 }
 
-test('full pipeline runs Metapod, Judge and Brian to an approved STOP export', async () => {
+test('full pipeline runs Compose, Judge and Revise to an approved STOP export', async () => {
   const result = await executeRun({
     pipeline,
     worker: new FixtureWorker(),

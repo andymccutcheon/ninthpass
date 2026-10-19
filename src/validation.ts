@@ -18,7 +18,7 @@ export function extractBody(text: string): string {
 }
 
 export function validateGenerated(text: string): void {
-  boundedText(text, 'Metapod output');
+  boundedText(text, 'Compose output');
   const system = exactlyOne(text, '=== SYSTEM PROMPT ===');
   const task = exactlyOne(text, '=== TASK PROMPT ===');
   if (text.slice(0, system).trim() || system > task) throw new Error('Output must start with System then Task Prompt.');
@@ -54,7 +54,7 @@ export function isAuthorizedFix(fix: Fix, recommendations: Judge['recommendation
 }
 
 export function validateRewrite(text: string, recNumbers: number[]): { body: string; deferred: string } {
-  boundedText(text, 'Brian output');
+  boundedText(text, 'Revise output');
   const body = extractBody(text);
   const after = text.slice(text.indexOf('<!-- END BODY -->') + '<!-- END BODY -->'.length);
   if (!/^Rec-application checklist\s*$/m.test(after)) throw new Error('Missing Rec-application checklist after END BODY.');

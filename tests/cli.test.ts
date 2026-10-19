@@ -21,13 +21,13 @@ test('help, version, validate and list work from an arbitrary directory', async 
   expect((await run(['validate'])).stdout).toContain('Validated 5 skills and 9 source assets');
   expect((await run(['--validate'])).stdout).toContain('Validated 5 skills');
   const list = JSON.parse((await run(['list', '--json'])).stdout);
-  expect(list.skills.map((skill: { name: string }) => skill.name)).toEqual(['brian-spillner', 'judge-dredd', 'metapod', 'prompt-pipeline', 'tasker']);
+  expect(list.skills.map((skill: { name: string }) => skill.name)).toEqual(['brief', 'compose', 'judge', 'loop', 'revise']);
 });
 
 test('install copies the skills and dry-run writes nothing', async () => {
   const directory = join(await temp(), 'skills');
   expect((await run(['install', '--dir', directory])).stdout).toContain('Installed 5 skills');
-  expect(await readFile(join(directory, 'metapod', 'SKILL.md'), 'utf8')).toContain('# Metapod');
+  expect(await readFile(join(directory, 'compose', 'SKILL.md'), 'utf8')).toContain('# Compose');
   const dry = join(await temp(), 'dry');
   expect((await run(['install', '--dir', dry, '--dry-run'])).stdout).toContain('Would install 5 skills');
 });

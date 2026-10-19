@@ -22,8 +22,8 @@ try {
 
   const installed = join(sandbox, 'installed-skills');
   assert.match((await exec(bin, ['install', '--dir', installed], { cwd: sandbox })).stdout, /Installed 5 skills/);
-  assert((await lstat(join(installed, 'metapod', 'SKILL.md'))).isFile());
-  assert((await lstat(join(installed, 'prompt-pipeline', 'scripts', 'stage_control.py'))).isFile());
+  assert((await lstat(join(installed, 'compose', 'SKILL.md'))).isFile());
+  assert((await lstat(join(installed, 'loop', 'scripts', 'stage_control.py'))).isFile());
 
   const out = join(sandbox, 'prompts');
   const runs = join(sandbox, 'runs');
