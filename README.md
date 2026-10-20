@@ -18,10 +18,17 @@ choose — OpenCode, Claude Code or Codex — already has its own authentication
 
 ## Quick start
 
+Until 2.0.0 is on npm, clone and build. The commands below run from the repository root.
+
 ```sh
-npx ninthpass install
-npx ninthpass run --request "Write a prompt for a meeting-notes summarizer"
+git clone https://github.com/andymccutcheon/ninthpass
+cd ninthpass && npm install && npm run build
+node dist/cli.js install
+node dist/cli.js run --request "Write a prompt for a meeting-notes summarizer"
 ```
+
+Once 2.0.0 ships, `npx ninthpass install` and `npx ninthpass run` do the same two things
+without the clone.
 
 `install` copies the five skills into the agent hosts it detects. `run` executes the full
 Compose → Judge → Revise loop and writes the approved prompt to
@@ -32,7 +39,7 @@ Compose → Judge → Revise loop and writes the approved prompt to
 Requires Node.js 22.12 or newer.
 
 ```sh
-npx ninthpass install
+node dist/cli.js install
 ```
 
 The command detects the agent hosts on this machine and copies all five skills into each
