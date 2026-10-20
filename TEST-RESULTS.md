@@ -1,5 +1,10 @@
 # Test results — Promptzilla v2
 
+> **Historical results.** The suite was run before the October 2026 skill rename. The
+> commands and counts remain valid; skill names in the prose are the originals
+> (`tasker` → `brief`, `metapod` → `compose`, `judge-dredd` → `judge`,
+> `brian-spillner` → `revise`, `prompt-pipeline` → `loop`).
+
 **Measured 2026-10-19** on macOS (Darwin), Node.js 22.23.1, npm 10.9.8.
 
 ## Automated suite

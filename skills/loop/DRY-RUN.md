@@ -1,5 +1,10 @@
 # Dry-run report: `prompt-pipeline` meta-skill
 
+> **Historical record.** This dry run was written before the October 2026 skill rename.
+> Original names in the record below: `metapod` → `compose`, `judge-dredd` → `judge`,
+> `brian-spillner` → `revise`, `prompt-pipeline` → `loop`; stage files `01-metapod.md` →
+> `01-compose.md`, `03-brian-rewrite.md` → `03-revise.md`.
+
 Date: 2026-10-15. Skill under test: `skills/prompt-pipeline/SKILL.md`. Sub-skills: `metapod`, `judge-dredd`, `brian-spillner` (Directive 1 skills, unedited). Runs live under `runs/`.
 
 ---

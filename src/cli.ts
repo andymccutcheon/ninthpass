@@ -17,9 +17,9 @@ import { createWorker, WORKER_NAMES, type WorkerName } from './workers/index.js'
 
 class CliError extends Error {}
 
-const HELP = `promptzilla ${VERSION}
+const HELP = `ninthpass ${VERSION}
 
-Usage: promptzilla <command> [options]
+Usage: ninthpass <command> [options]
 
 Skills
   install               Copy the five skills into detected agent skill directories
@@ -28,7 +28,7 @@ Skills
 
 Pipeline
   start                 Create a run and print its first dispatch (manual mode)
-  run                   Run Metapod, Judge Dredd and Brian Spillner to a terminal state
+  run                   Run Compose, Judge and Revise to a terminal state
   status <run-id>       Show a run, its score history and the next dispatch
   submit <run-id>       Submit one stage output (manual mode)
   pause <run-id>        Pause an active stage for a user decision
@@ -54,16 +54,16 @@ Run options
 
 Global
   --skills-dir PATH       Override the skill catalog
-  --runs-dir PATH         Override run storage (default: ~/.promptzilla/runs)
+  --runs-dir PATH         Override run storage (default: ~/.ninthpass/runs)
   --json                  Machine-readable output
   --help, --version
 
 Examples
-  npx promptzilla install
-  npx promptzilla run --request "Write a prompt for a meeting-notes summarizer"
-  npx promptzilla run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
-  npx promptzilla test --live --worker opencode --model deepseek/deepseek-flash
-  npx promptzilla status <run-id>
+  npx ninthpass install
+  npx ninthpass run --request "Write a prompt for a meeting-notes summarizer"
+  npx ninthpass run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
+  npx ninthpass test --live --worker opencode --model deepseek/deepseek-flash
+  npx ninthpass status <run-id>
 `;
 
 const OPTIONS = {
@@ -128,11 +128,11 @@ function parseTimeout(value: string | undefined): number {
 }
 
 function runsDirectory(values: Values): string {
-  return resolve(values['runs-dir'] ?? process.env.PROMPTZILLA_RUNS_DIR ?? join(homedir(), '.promptzilla', 'runs'));
+  return resolve(values['runs-dir'] ?? process.env.NINTHPASS_RUNS_DIR ?? join(homedir(), '.ninthpass', 'runs'));
 }
 
 function skillsDirectory(values: Values): string {
-  return resolve(values['skills-dir'] ?? process.env.PROMPTZILLA_SKILLS_DIR ?? bundledSkillsDirectory());
+  return resolve(values['skills-dir'] ?? process.env.NINTHPASS_SKILLS_DIR ?? bundledSkillsDirectory());
 }
 
 async function loadPipeline(values: Values): Promise<Pipeline> {
@@ -189,7 +189,7 @@ function progressHandler(values: Values): (event: OrchestratorEvent) => void {
       }
     } else if (event.type === 'paused') {
       process.stdout.write(`\nPaused: ${event.run.reason ?? 'a decision is required'}\n`);
-      process.stdout.write(`Resume with: promptzilla resume ${event.run.id} --decision "..."\n`);
+      process.stdout.write(`Resume with: ninthpass resume ${event.run.id} --decision "..."\n`);
     } else if (event.type === 'finished' && !values['show-output']) {
       // The summary prints after executeRun returns.
     }
@@ -265,7 +265,7 @@ async function commandStart(values: Values, positionals: string[]): Promise<numb
     process.stdout.write(`Directory: ${join(runsDirectory(values), run.id)}\n`);
     if (run.dispatch) {
       process.stdout.write(`Next: ${run.dispatch.skill} (${run.dispatch.stage}), dispatch ${run.dispatch.id}\n`);
-      process.stdout.write(`Submit with: promptzilla submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
+      process.stdout.write(`Submit with: ninthpass submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
     }
   }
   return 0;
@@ -403,7 +403,7 @@ async function commandFix(values: Values, positionals: string[]): Promise<number
     printRunSummary(run);
     if (run.dispatch) {
       process.stdout.write(`Confirmation pending: ${run.dispatch.skill} (${run.dispatch.stage}), dispatch ${run.dispatch.id}\n`);
-      process.stdout.write(`Submit with: promptzilla submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
+      process.stdout.write(`Submit with: ninthpass submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
     }
   }
   return 0;
@@ -507,7 +507,7 @@ async function main(): Promise<number> {
     case 'fix': return commandFix(values, positionals.slice(1));
     case 'export': return commandExport(values, positionals.slice(1));
     case 'test': return commandTest(values);
-    default: throw new CliError(`Unknown command: ${command}. Run "promptzilla --help".`);
+    default: throw new CliError(`Unknown command: ${command}. Run "ninthpass --help".`);
   }
 }
 
@@ -515,6 +515,6 @@ main()
   .then(code => { process.exitCode = code; })
   .catch(error => {
     const message = error instanceof Error ? error.message : 'Command failed.';
-    process.stderr.write(`promptzilla: ${message}\n`);
+    process.stderr.write(`ninthpass: ${message}\n`);
     process.exitCode = 1;
   });

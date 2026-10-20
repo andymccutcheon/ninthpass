@@ -1,4 +1,4 @@
-# Promptzilla v2 — CLI-native plan
+# Ninth Pass v2 — CLI-native plan
 
 **Status: implemented and verified on 2026-10-19.** Version 1 was an MCP server; version 2
 removes the transport and makes the skills and the pipeline usable from the command line.
@@ -6,14 +6,14 @@ The five `skills/*/SKILL.md` files and both Python helpers remain the source mat
 
 ## Goal
 
-Keep the durable Metapod → Judge Dredd → Brian Spillner loop, drop the MCP and Cloudflare
+Keep the durable Compose → Judge → Revise loop, drop the MCP and Cloudflare
 surface, and make the product installable and runnable without a client integration:
 
-1. `promptzilla install` copies the five skills into the agent hosts on the machine.
-2. `promptzilla run` orchestrates the real skills with a fresh process per stage.
+1. `ninthpass install` copies the five skills into the agent hosts on the machine.
+2. `ninthpass run` orchestrates the real skills with a fresh process per stage.
 3. A STOP at 9 or higher writes a clean Markdown prompt; a cap, block or plateau writes a
    provisional candidate.
-4. `promptzilla test --live` exercises the real pipeline programmatically.
+4. `ninthpass test --live` exercises the real pipeline programmatically.
 
 ## Architecture
 
@@ -54,7 +54,7 @@ an actual separate process.
 
 ### Install
 
-`promptzilla install` walks the bundled `skills/` directory and copies each skill folder
+`ninthpass install` walks the bundled `skills/` directory and copies each skill folder
 into the targets it detects: Claude Code (`~/.claude/skills`), OpenCode
 (`~/.config/opencode/skills`) and shared agents (`~/.agents/skills`). `--target`, `--dir`
 and `--dry-run` override the behavior. The default when no host is detected is Claude
@@ -76,7 +76,7 @@ with owner-only permissions.
 
 - [x] All five skills are discoverable and validate from any working directory.
 - [x] `install` copies the skills and their supporting files; `--dry-run` writes nothing.
-- [x] A Full run calls Metapod, Judge and Brian with a separate process per stage.
+- [x] A Full run calls Compose, Judge and Revise with a separate process per stage.
 - [x] An Optimize-only run starts at Judge and preserves the input byte-for-byte on STOP.
 - [x] Invalid output retries once, then blocks and preserves the best candidate.
 - [x] STOP at 9+ exports an approved Markdown prompt.
@@ -84,7 +84,7 @@ with owner-only permissions.
 - [x] A plateau is resumable with an explicit decision.
 - [x] Manual `start`, `submit`, `pause`, `resume`, `fix` and `export` work without a worker.
 - [x] Fixture tests cover the full loop; `--live` runs the real skills.
-- [x] No MCP dependency, no Cloudflare dependency, no API key required by Promptzilla.
+- [x] No MCP dependency, no Cloudflare dependency, no API key required by Ninth Pass.
 - [x] The packaged tarball installs in a clean directory and runs the fixture pipeline.
 
 ## Decisions and trade-offs
@@ -99,7 +99,7 @@ with owner-only permissions.
   resumable; a later STOP replaces the provisional final with the approved one.
 - **No automatic fixes.** Judge recommendations are not applied silently. `fix` requires
   explicit pairs that match a Judge recommendation, and a fresh Judge confirms the diff.
-- **Workers are adapters, not providers.** Promptzilla never reads provider keys. Adding a
+- **Workers are adapters, not providers.** Ninth Pass never reads provider keys. Adding a
   new worker means a command builder and an output parser, not a new API client.
 - **The live test is a protocol test.** It can pass on a provisional cap at 8. It fails on
   a blocked run, because that means the model could not satisfy the stage contract twice.
@@ -111,5 +111,5 @@ with owner-only permissions.
 - `worker/`, the Cloudflare Vite config, `CLOUDFLARE.md`, the Cloudflare scripts
 - `@modelcontextprotocol/*`, `cf`, `miniflare`, `@cloudflare/*`, `esbuild`
 - The MCP-specific tests (`server`, `cloudflare`, `auth`)
-- `agent-skills/promptzilla-setup` (replaced by `promptzilla install`)
+- `agent-skills/promptzilla-setup` (replaced by `ninthpass install`)
 - `examples/mcp.json`

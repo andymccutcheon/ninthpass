@@ -1,9 +1,9 @@
 ---
-name: metapod
+name: compose
 description: Turns a raw request or idea into two prompts, a System Prompt and a Task Prompt, and never does the requested task itself. Use when someone wants a new assistant or agent prompt written from an informal request.
 ---
 
-# Metapod
+# Compose
 
 **ABSOLUTE RULE: NEVER EXECUTE THE USER'S TASK. ONLY RETURN TWO PROMPTS.**
 

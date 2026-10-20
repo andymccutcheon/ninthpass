@@ -9,7 +9,7 @@ import { generated, judge, prompt, rewrite } from './fixtures.js';
 let root: string;
 let pipeline: Pipeline;
 let serial = 0;
-beforeEach(async () => { root = await mkdtemp(join(tmpdir(), 'promptzilla-runs-')); pipeline = new Pipeline(await Catalog.load(resolve('skills')), root); });
+beforeEach(async () => { root = await mkdtemp(join(tmpdir(), 'ninthpass-runs-')); pipeline = new Pipeline(await Catalog.load(resolve('skills')), root); });
 afterEach(async () => { await rm(root, { recursive: true, force: true }); });
 async function submit(id: string, output: string, executionId = `worker-${++serial}`) {
   const view = await pipeline.status(id);
@@ -18,7 +18,7 @@ async function submit(id: string, output: string, executionId = `worker-${++seri
 
 test('optimize-only STOP exports scored input byte-for-byte and survives restart', async () => {
   const start = await pipeline.start({ mode: 'optimize-only', input: prompt });
-  expect(start.dispatch?.skill).toBe('judge-dredd');
+  expect(start.dispatch?.skill).toBe('judge');
   const end = await submit(start.id, judge(9));
   expect(end.status).toBe('completed');
   expect(end.final?.approved).toBe(true);
@@ -31,7 +31,7 @@ test('optimize-only STOP exports scored input byte-for-byte and survives restart
 
 test('full workflow isolates Judge from checklist, carries deferred items and latest BODY', async () => {
   let v = await pipeline.start({ mode: 'full', input: 'Build a meeting notes bot', priorities: 'Keep placeholders' });
-  expect(v.dispatch?.skill).toBe('metapod');
+  expect(v.dispatch?.skill).toBe('compose');
   v = await submit(v.id, generated);
   v = await submit(v.id, judge(7));
   expect(v.dispatch?.instructions).toContain('15%');

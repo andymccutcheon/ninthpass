@@ -1,27 +1,30 @@
-# Promptzilla
+# Ninth Pass
 
-**Site:** [promptzilla.amccutcheon.com](https://promptzilla.amccutcheon.com)
+**Site:** [ninthpass.amccutcheon.com](https://ninthpass.amccutcheon.com)
 
-[![npm](https://img.shields.io/npm/v/promptzilla)](https://www.npmjs.com/package/promptzilla)
-[![verify](https://github.com/andymccutcheon/promptzilla/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/promptzilla/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/promptzilla)](https://github.com/andymccutcheon/promptzilla/blob/main/LICENSE)
+[![npm](https://img.shields.io/npm/v/ninthpass)](https://www.npmjs.com/package/ninthpass)
+[![verify](https://github.com/andymccutcheon/ninthpass/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/ninthpass/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/ninthpass)](https://github.com/andymccutcheon/ninthpass/blob/main/LICENSE)
 
 Five prompt-engineering skills and a durable optimization loop. Install the skills into
 your agent with one command, or run the whole pipeline from the terminal with a fresh
 process per stage.
 
-Promptzilla does not call a model API itself and stores no credentials. The worker you
+> **Release status:** Ninth Pass 2.0.0 is pending npm publication. The current npm package
+> is Promptzilla 1.x, the MCP server; use the source or the local build until 2.0.0 ships.
+
+Ninth Pass does not call a model API itself and stores no credentials. The worker you
 choose — OpenCode, Claude Code or Codex — already has its own authentication.
 
 ## Quick start
 
 ```sh
-npx promptzilla install
-npx promptzilla run --request "Write a prompt for a meeting-notes summarizer"
+npx ninthpass install
+npx ninthpass run --request "Write a prompt for a meeting-notes summarizer"
 ```
 
 `install` copies the five skills into the agent hosts it detects. `run` executes the full
-Metapod → Judge Dredd → Brian Spillner loop and writes the approved prompt to
+Compose → Judge → Revise loop and writes the approved prompt to
 `./prompts/<slug>.md`.
 
 ## Install the skills
@@ -29,7 +32,7 @@ Metapod → Judge Dredd → Brian Spillner loop and writes the approved prompt t
 Requires Node.js 22.12 or newer.
 
 ```sh
-npx promptzilla install
+npx ninthpass install
 ```
 
 The command detects the agent hosts on this machine and copies all five skills into each
@@ -42,45 +45,47 @@ one it finds:
 | Shared agents | `~/.agents/skills/<skill>/` |
 
 If none are found it installs to Claude Code. Re-run the same command to update; the five
-skill folders are replaced. Use `--target`, `--dir` or `--dry-run` for control:
+skill folders are replaced. Upgrading from the pre-rename release also removes the five
+legacy folders (`tasker`, `metapod`, `judge-dredd`, `brian-spillner`, `prompt-pipeline`)
+when they are present. Use `--target`, `--dir` or `--dry-run` for control:
 
 ```sh
-npx promptzilla install --target all
-npx promptzilla install --target claude,opencode
-npx promptzilla install --dir ./.claude/skills
-npx promptzilla install --dry-run
+npx ninthpass install --target all
+npx ninthpass install --target claude,opencode
+npx ninthpass install --dir ./.claude/skills
+npx ninthpass install --dry-run
 ```
 
-The installed skills are `tasker`, `metapod`, `judge-dredd`, `brian-spillner` and
-`prompt-pipeline`. Supporting files for the manual pipeline (`DRY-RUN.md`, the Python
-helpers) are installed with `prompt-pipeline`.
+The installed skills are `brief`, `compose`, `judge`, `revise` and
+`loop`. Supporting files for the manual pipeline (`DRY-RUN.md`, the Python
+helpers) are installed with `loop`.
 
 ## Run the pipeline
 
 Full mode turns a rough request into a prompt, then scores and rewrites it until Judge
-Dredd returns STOP at 9 or higher:
+returns STOP at 9 or higher:
 
 ```sh
-npx promptzilla run --request "Write a prompt for a meeting-notes summarizer that returns five bullets"
+npx ninthpass run --request "Write a prompt for a meeting-notes summarizer that returns five bullets"
 ```
 
 Optimize-only mode starts from a prompt you already have:
 
 ```sh
-npx promptzilla run --prompt ./prompt.md
+npx ninthpass run --prompt ./prompt.md
 ```
 
 A trailing argument is shorthand for a Full request:
 
 ```sh
-npx promptzilla run "Write a prompt for a release-notes generator"
+npx ninthpass run "Write a prompt for a release-notes generator"
 ```
 
 The default worker is `opencode`. Choose another and pass a model when you want one:
 
 ```sh
-npx promptzilla run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
-npx promptzilla run --request "..." --worker codex --model gpt-5
+npx ninthpass run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
+npx ninthpass run --request "..." --worker codex --model gpt-5
 ```
 
 Useful flags:
@@ -109,10 +114,10 @@ score stopped improving, the best scored candidate is written to
 resumable:
 
 ```sh
-npx promptzilla run --resume <run-id> --decision "Continue; resolve the count conflict first."
+npx ninthpass run --resume <run-id> --decision "Continue; resolve the count conflict first."
 ```
 
-Every run also keeps a full record under `~/.promptzilla/runs/<run-id>/`: the original
+Every run also keeps a full record under `~/.ninthpass/runs/<run-id>/`: the original
 input, each stage file, retries, scorecards, provenance and `run.json`. Use `--runs-dir`
 to relocate it.
 
@@ -128,7 +133,7 @@ isolation, not an attestation.
 | `codex` | `codex exec --skip-git-repo-check -` | Reads the packet from stdin |
 | `fixture` | in-process | Deterministic; used by the test suite |
 
-The worker must be installed and authenticated already. Promptzilla never reads or stores
+The worker must be installed and authenticated already. Ninth Pass never reads or stores
 provider keys.
 
 ## Manual mode
@@ -138,13 +143,13 @@ run and prints the first dispatch; the agent executes `dispatch.instructions` wi
 `dispatch.input` and submits the exact output.
 
 ```sh
-npx promptzilla start --request "Write a prompt for a meeting-notes summarizer" --json
-npx promptzilla status <run-id>
-npx promptzilla submit <run-id> --dispatch <dispatch-id> --output ./stage-output.md
-npx promptzilla pause <run-id> --reason "Need a user decision"
-npx promptzilla resume <run-id> --decision "Keep the current structure"
-npx promptzilla fix <run-id> --old "notes" --new "meeting notes"
-npx promptzilla export <run-id> --out ./prompts
+npx ninthpass start --request "Write a prompt for a meeting-notes summarizer" --json
+npx ninthpass status <run-id>
+npx ninthpass submit <run-id> --dispatch <dispatch-id> --output ./stage-output.md
+npx ninthpass pause <run-id> --reason "Need a user decision"
+npx ninthpass resume <run-id> --decision "Keep the current structure"
+npx ninthpass fix <run-id> --old "notes" --new "meeting notes"
+npx ninthpass export <run-id> --out ./prompts
 ```
 
 `status --json` includes the active dispatch, so the packet can be handed to a fresh
@@ -156,23 +161,23 @@ exactly in a Judge recommendation, and a fresh Judge confirms the diff before ap
 
 | Skill | Job |
 |---|---|
-| `tasker` | Turn a rough task assignment into an execution-ready instruction |
-| `metapod` | Turn a request into a System Prompt and a Task Prompt |
-| `judge-dredd` | Score a prompt on a locked 0–10 rubric; STOP at 9+ |
-| `brian-spillner` | Rewrite a prompt by applying every numbered recommendation |
-| `prompt-pipeline` | Orchestrate the three pipeline skills manually |
+| `brief` | Turn a rough task assignment into an execution-ready instruction |
+| `compose` | Turn a request into a System Prompt and a Task Prompt |
+| `judge` | Score a prompt on a locked 0–10 rubric; STOP at 9+ |
+| `revise` | Rewrite a prompt by applying every numbered recommendation |
+| `loop` | Orchestrate the three pipeline skills manually |
 
 The installed files are the source of truth. The CLI pins each run to the exact skill
 text it started with, so editing a skill mid-run cannot change the current run.
 
 ## Pipeline rules
 
-- **Metapod** must return one System Prompt and one Task Prompt with all required
+- **Compose** must return one System Prompt and one Task Prompt with all required
   headings. It never performs the requested task.
-- **Judge Dredd** returns section ratings with quoted evidence, one overall rating, a
+- **Judge** returns section ratings with quoted evidence, one overall rating, a
   STOP or CONTINUE verdict, and numbered recommendations. STOP is valid only at 9 or
   higher; CONTINUE needs 3–5 recommendations.
-- **Brian Spillner** returns the complete rewrite between one BEGIN and one END BODY
+- **Revise** returns the complete rewrite between one BEGIN and one END BODY
   marker plus a checklist accounting for every recommendation. Judge re-scores the body
   without seeing the checklist.
 - A scoring round starts with Judge. Pass 1 counts toward the four-round cap.
@@ -203,7 +208,7 @@ output. It does not prove that a particular prompt is good; Judge can legitimate
 ## Library use
 
 ```ts
-import { Catalog, Pipeline, executeRun, createWorker } from 'promptzilla';
+import { Catalog, Pipeline, executeRun, createWorker } from 'ninthpass';
 
 const pipeline = new Pipeline(await Catalog.load('./skills'), './runs');
 const result = await executeRun({
@@ -220,7 +225,7 @@ manual orchestration. `Catalog` discovers and validates skill folders.
 
 ## Package and release
 
-The package publishes to npm as [`promptzilla`](https://www.npmjs.com/package/promptzilla).
+The package publishes to npm as [`ninthpass`](https://www.npmjs.com/package/ninthpass).
 Bump `version`, run `npm run check`, then `npm publish --access public`, or trigger the
 **publish** GitHub Actions workflow.
 
@@ -236,13 +241,13 @@ Bump `version`, run `npm run check`, then `npm publish --access public`, or trig
 
 ## Migrating from 1.x
 
-Version 1.x was an MCP server. Version 2 is a CLI and a library.
+Version 1.x was Promptzilla, an MCP server. Version 2 is Ninth Pass, a CLI and a library.
 
 1. Remove the `promptzilla` entry from your MCP client configuration.
-2. Run `npx promptzilla install`.
-3. Use `npx promptzilla run ...` or the installed skills directly.
+2. Run `npx ninthpass install`.
+3. Use `npx ninthpass run ...` or the installed skills directly.
 4. Old runs live under `~/.promptzilla-mcp/runs`; read one with
-   `--runs-dir ~/.promptzilla-mcp/runs`. New runs default to `~/.promptzilla/runs`.
+   `--runs-dir ~/.promptzilla-mcp/runs`. New runs default to `~/.ninthpass/runs`.
 5. The Cloudflare Worker, HTTP transport and MCP-specific tools, prompts and resources are
    gone. The durable pipeline engine and all five skills remain.
 

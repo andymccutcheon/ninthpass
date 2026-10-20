@@ -1,9 +1,9 @@
 ---
-name: brian-spillner
+name: revise
 description: Rewrites a prompt by applying every numbered recommendation from a scorecard, cutting nothing that was not asked for, and returns the complete rewrite between BODY markers followed by a Rec-application checklist. Use when a scored prompt needs a revision that implements specific recommendations.
 ---
 
-# Brian Spillner
+# Revise
 
 ## Purpose
 

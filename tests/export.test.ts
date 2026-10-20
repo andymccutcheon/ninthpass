@@ -11,7 +11,7 @@ let root: string;
 let pipeline: Pipeline;
 let serial = 0;
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'promptzilla-export-'));
+  root = await mkdtemp(join(tmpdir(), 'ninthpass-export-'));
   pipeline = new Pipeline(await Catalog.load(resolve('skills')), join(root, 'runs'));
 });
 afterEach(async () => { await rm(root, { recursive: true, force: true }); });

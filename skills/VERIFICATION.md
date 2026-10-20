@@ -1,5 +1,10 @@
 # Verification: Directive 1 (agent prompts → skills)
 
+> **Historical record.** This document was written before the October 2026 skill rename.
+> Original names in the record below: `tasker` → `brief`, `metapod` → `compose`,
+> `judge-dredd` → `judge`, `brian-spillner` → `revise`, `prompt-pipeline` → `loop`;
+> stage files `01-metapod.md` → `01-compose.md`, `03-brian-rewrite.md` → `03-revise.md`.
+
 Date: 2026-10-15. Sources: `../01-metapod.md`, `../02-judge-dredd.md`, `../03-brian-spillner.md` (unedited). Each SKILL.md was re-read line by line against the text between its source's BEGIN/END SYSTEM PROMPT markers.
 
 ## Concrete checks

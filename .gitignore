@@ -3,7 +3,7 @@ dist/
 coverage/
 runs/
 prompts/
-.promptzilla/
+.ninthpass/
 *.tgz
 *.log
 

@@ -6,7 +6,7 @@ import { detectTargets, installSkills, targetDirectory } from '../src/install.js
 
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
-async function temp() { const path = await mkdtemp(join(tmpdir(), 'promptzilla-install-')); roots.push(path); return path; }
+async function temp() { const path = await mkdtemp(join(tmpdir(), 'ninthpass-install-')); roots.push(path); return path; }
 
 test('maps targets to the standard user skill directories', () => {
   expect(targetDirectory('claude', '/home/andy')).toBe('/home/andy/.claude/skills');
@@ -25,14 +25,17 @@ test('detects installed agent hosts and falls back to Claude', async () => {
   expect(await detectTargets(empty)).toEqual(['claude']);
 });
 
-test('installs every bundled skill and its supporting files into a chosen directory', async () => {
+test('installs every bundled skill, removes legacy skill folders, and copies supporting files', async () => {
   const directory = join(await temp(), 'skills');
+  await mkdir(join(directory, 'tasker'), { recursive: true });
+  await writeFile(join(directory, 'tasker', 'SKILL.md'), 'legacy');
   const results = await installSkills({ directory });
   expect(results).toHaveLength(1);
-  expect(results[0]!.skills).toEqual(['brian-spillner', 'judge-dredd', 'metapod', 'prompt-pipeline', 'tasker']);
-  expect((await lstat(join(directory, 'metapod', 'SKILL.md'))).isFile()).toBe(true);
-  expect(await readFile(join(directory, 'prompt-pipeline', 'scripts', 'stage_control.py'), 'utf8')).toContain('def ');
-  expect((await lstat(join(directory, 'prompt-pipeline', 'DRY-RUN.md'))).isFile()).toBe(true);
+  expect(results[0]!.skills).toEqual(['brief', 'compose', 'judge', 'loop', 'revise']);
+  expect((await lstat(join(directory, 'compose', 'SKILL.md'))).isFile()).toBe(true);
+  expect(await readFile(join(directory, 'loop', 'scripts', 'stage_control.py'), 'utf8')).toContain('def ');
+  expect((await lstat(join(directory, 'loop', 'DRY-RUN.md'))).isFile()).toBe(true);
+  await expect(lstat(join(directory, 'tasker'))).rejects.toMatchObject({ code: 'ENOENT' });
 });
 
 test('dry run reports the plan without writing', async () => {
@@ -49,7 +52,7 @@ test('installs to multiple detected hosts', async () => {
   const results = await installSkills({ home });
   expect(results.map(result => result.target)).toEqual(['claude', 'opencode']);
   for (const result of results) {
-    expect((await lstat(join(result.directory, 'judge-dredd', 'SKILL.md'))).isFile()).toBe(true);
+    expect((await lstat(join(result.directory, 'judge', 'SKILL.md'))).isFile()).toBe(true);
   }
 });
 

@@ -13,7 +13,7 @@ let root: string;
 let pipeline: Pipeline;
 let serial = 0;
 beforeEach(async () => {
-  root = await mkdtemp(join(tmpdir(), 'promptzilla-orchestrator-'));
+  root = await mkdtemp(join(tmpdir(), 'ninthpass-orchestrator-'));
   pipeline = new Pipeline(await Catalog.load(resolve('skills')), join(root, 'runs'));
 });
 afterEach(async () => { await rm(root, { recursive: true, force: true }); });
@@ -28,7 +28,7 @@ class ScriptedWorker implements Worker {
   }
 }
 
-test('full pipeline runs Metapod, Judge and Brian to an approved STOP export', async () => {
+test('full pipeline runs Compose, Judge and Revise to an approved STOP export', async () => {
   const result = await executeRun({
     pipeline,
     worker: new FixtureWorker(),
