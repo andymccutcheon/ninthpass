@@ -5,9 +5,7 @@ const Metadata = z.object({
   name: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description: z.string().trim().min(1).max(4000),
 });
-export interface Skill { name: string; description: string; source: string; instructions: string; uri: string }
-export const skillUri = (name: string) => `promptzilla://skills/${name}`;
-export const assetUri = (path: string) => `promptzilla://assets/${path.split('/').map(encodeURIComponent).join('/')}`;
+export interface Skill { name: string; description: string; source: string; instructions: string }
 
 export class Catalog {
   protected constructor(private readonly skills: Map<string, Skill>, readonly assets: Map<string, string>) {}
@@ -25,13 +23,13 @@ export class Catalog {
       const metadata = Metadata.parse(document.toJS({ maxAliasCount: 0 }));
       if (metadata.name !== match[1]) throw new Error(`Skill name must equal folder in ${path}.`);
       if (!frontmatter[2]!.trim()) throw new Error(`Missing instructions in ${path}.`);
-      skills.set(metadata.name, { ...metadata, source, instructions: frontmatter[2]!, uri: skillUri(metadata.name) });
+      skills.set(metadata.name, { ...metadata, source, instructions: frontmatter[2]! });
     }
     if (!skills.size) throw new Error('No skills found. Expected skills/<name>/SKILL.md.');
     return new Catalog(skills, assets);
   }
 
-  list() { return [...this.skills.values()].map(({ name, description, uri }) => ({ name, description, uri })); }
+  list() { return [...this.skills.values()].map(({ name, description }) => ({ name, description })); }
   get(name: string): Skill {
     const skill = this.skills.get(name);
     if (!skill) throw new Error(`Unknown skill: ${name}`);

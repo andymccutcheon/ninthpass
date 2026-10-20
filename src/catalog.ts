@@ -2,7 +2,7 @@ import { readdir, lstat } from 'node:fs/promises';
 import { extname, join, resolve } from 'node:path';
 import { Catalog as CoreCatalog } from './catalog-core.js';
 import { regularText } from './io.js';
-export { assetUri, skillUri, type Skill } from './catalog-core.js';
+export { type Skill } from './catalog-core.js';
 
 export class Catalog extends CoreCatalog {
   static async load(directory: string): Promise<CoreCatalog> {

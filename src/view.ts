@@ -16,7 +16,7 @@ export function runView(run: Run, runDir?: string) {
     next_step: run.dispatch
       ? 'Execute dispatch.instructions with dispatch.input in a fresh worker, then submit its output with this dispatch ID, a unique execution ID and fresh_context=true.'
       : run.status === 'paused'
-        ? 'Ask the user for a decision, then run `promptzilla resume <run-id> --decision "..."`.'
+        ? 'Ask the user for a decision, then run `ninthpass resume <run-id> --decision "..."`.'
         : 'Show the final or provisional result, history, deferred recommendations and unresolved placeholders.',
   };
 }

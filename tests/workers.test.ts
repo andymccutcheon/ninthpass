@@ -55,7 +55,7 @@ test('runProcess passes stdin, returns stdout and reports a non-zero exit', asyn
 });
 
 test('runProcess reports a missing binary and enforces a timeout', async () => {
-  await expect(runProcess({ command: 'promptzilla-no-such-command', args: [], input: '', timeoutMs: 5000 }))
+  await expect(runProcess({ command: 'ninthpass-no-such-command', args: [], input: '', timeoutMs: 5000 }))
     .rejects.toThrow(/not found/i);
   await expect(runProcess({ command: process.execPath, args: ['-e', 'setTimeout(() => {}, 10000)'], input: '', timeoutMs: 100 }))
     .rejects.toThrow(/timed out/i);

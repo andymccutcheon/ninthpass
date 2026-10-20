@@ -9,7 +9,7 @@ import { generated, judge, prompt, rewrite } from './fixtures.js';
 let root: string;
 let pipeline: Pipeline;
 let serial = 0;
-beforeEach(async () => { root = await mkdtemp(join(tmpdir(), 'promptzilla-runs-')); pipeline = new Pipeline(await Catalog.load(resolve('skills')), root); });
+beforeEach(async () => { root = await mkdtemp(join(tmpdir(), 'ninthpass-runs-')); pipeline = new Pipeline(await Catalog.load(resolve('skills')), root); });
 afterEach(async () => { await rm(root, { recursive: true, force: true }); });
 async function submit(id: string, output: string, executionId = `worker-${++serial}`) {
   const view = await pipeline.status(id);
