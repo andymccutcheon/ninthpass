@@ -1,5 +1,6 @@
 import { execFile } from 'node:child_process';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { existsSync, readdirSync } from 'node:fs';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
@@ -123,4 +124,47 @@ test('bad flags, missing input and a missing catalog fail with a clear message',
   await expect(run(['run'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('Supply --request') });
   await expect(run(['validate'], { env: { ...process.env, SILVERQUILL_SKILLS_DIR: '/does-not-exist' } })).rejects.toMatchObject({ code: 1 });
   await expect(run(['install', '--target', 'nope'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('Unknown install target') });
+});
+
+test('a legacy run is shown read-only and writes no file anywhere', async () => {
+  // A run written under the old name must stay inspectable and untouched: no new
+  // run directory, no lock, no artifact, and a byte-identical run.json afterwards.
+  const root = await temp();
+  const home = join(root, 'home');
+  const id = '11111111-2222-4333-8444-555555555555';
+  const legacyDirectory = join(home, '.ninthpass', 'runs', id);
+  await mkdir(legacyDirectory, { recursive: true });
+  const legacy = {
+    schema_version: 1,
+    id,
+    mode: 'full',
+    created_at: '2026-09-30T00:00:00.000Z',
+    status: 'paused',
+    original: 'Write a meeting-notes bot.',
+    current: '',
+    priorities: '',
+    user_decisions: [],
+    skill_sources: {},
+    history: [],
+    artifacts: [],
+    provenance: [],
+    deferred: '',
+    reason: 'waiting for a decision',
+  };
+  await writeFile(join(legacyDirectory, 'run.json'), `${JSON.stringify(legacy, null, 2)}\n`);
+  const before = await readFile(join(legacyDirectory, 'run.json'), 'utf8');
+
+  const newRuns = join(home, '.silverquill', 'runs');
+  const status = await run(['status', id, '--runs-dir', newRuns, '--json'], {
+    env: { ...process.env, HOME: home, SILVERQUILL_RUNS_DIR: newRuns },
+  });
+  const view = JSON.parse(status.stdout);
+  expect(view.id).toBe(id);
+  expect(view.status).toBe('paused');
+  expect(status.stderr).toContain('Legacy run');
+
+  // Nothing was written: the legacy record is unchanged and the new root holds no run.
+  expect(await readFile(join(legacyDirectory, 'run.json'), 'utf8')).toBe(before);
+  expect(readdirSync(legacyDirectory)).toEqual(['run.json']);
+  expect(existsSync(newRuns) ? readdirSync(newRuns) : []).toEqual([]);
 });
