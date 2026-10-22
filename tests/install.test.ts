@@ -6,7 +6,7 @@ import { detectTargets, installSkills, targetDirectory } from '../src/install.js
 
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
-async function temp() { const path = await mkdtemp(join(tmpdir(), 'ninthpass-install-')); roots.push(path); return path; }
+async function temp() { const path = await mkdtemp(join(tmpdir(), 'silverquill-install-')); roots.push(path); return path; }
 
 test('maps targets to the standard user skill directories', () => {
   expect(targetDirectory('claude', '/home/andy')).toBe('/home/andy/.claude/skills');

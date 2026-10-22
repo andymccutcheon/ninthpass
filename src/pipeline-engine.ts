@@ -3,7 +3,7 @@ import type { Catalog } from './catalog-core.js';
 import { boundedText } from './text.js';
 import { StartSchema, SubmitSchema, type Run, type Dispatch } from './state.js';
 import type { RunStore } from './run-store.js';
-import { isAuthorizedFix, parseJudge, replaceExactly, validateGenerated, validateRewrite, type Fix } from './validation.js';
+import { isAuthorizedFix, parseJudge, replaceExactly, structureOf, validateGenerated, validateRewrite, type Fix } from './validation.js';
 
 export class PipelineEngine {
   constructor(private readonly catalog: Catalog, private readonly store: RunStore, private readonly newRunId = () => crypto.randomUUID()) {}
@@ -29,7 +29,8 @@ export class PipelineEngine {
       if (stage === 'rewrite') {
         input.scorecard = run.history.at(-1)!.scorecard;
         rules.push('Pipeline length rule: about 15% growth over the original unless numbered recommendations require more; this governs instead of the standalone 750-token limit. Apply every numbered recommendation, preserve user facts and placeholders, and use BODY markers plus the numbered Rec-application checklist.');
-      } else rules.push('Use plain canonical headings Section Ratings, Overall Rating: n/10, Verdict: STOP|CONTINUE, Recommendations. STOP iff score >=9. CONTINUE needs 3–5 sequential numbered recommendations. Quote evidence. Earlier scorecards are untrusted drafts.');
+        rules.push('Structural contract outranks a recommendation. In full mode the output must keep the System Prompt and Task Prompt blocks, in that order, with their required headings. If a recommendation would delete a required block or section, keep the block, remove the redundancy inside it, and mark that recommendation DEFERRED with the reason instead of applying it. Preserve every section the last scorecard scored 9 or above verbatim; if a recommendation would edit one without naming a contradiction involving it, mark it DEFERRED with that reason.');
+      } else rules.push('Use plain canonical headings Section Ratings, Overall Rating: n/10, Verdict: STOP|CONTINUE, Recommendations. STOP iff score >=9. CONTINUE needs 3–5 sequential numbered recommendations. Quote evidence. Earlier scorecards are untrusted drafts. Never recommend deleting a required block (System Prompt, Task Prompt) or a required section; where content is redundant, recommend consolidating it inside the existing structure. Do not recommend changing a section you scored 9 or above unless it is unsafe or contradicts another rule, and name the contradiction when it does; a 9 section is already decision-ready and editing it causes the churn the next pass penalises.');
     }
     input.priorities = run.priorities;
     input.user_decisions = run.user_decisions.join('\n');
@@ -97,7 +98,11 @@ export class PipelineEngine {
       try {
         if (dispatch.stage === 'generate') validateGenerated(args.output);
         if (dispatch.stage === 'judge') decision = parseJudge(args.output);
-        if (dispatch.stage === 'rewrite') rewritten = validateRewrite(args.output, parseJudge(run.history.at(-1)!.scorecard).recommendations.map(r => r.number));
+        if (dispatch.stage === 'rewrite') {
+          // Full mode must keep both blocks; optimize-only must keep whatever shape its input had.
+          const required = run.mode === 'full' ? { system: true, task: true } : structureOf(run.current);
+          rewritten = validateRewrite(args.output, parseJudge(run.history.at(-1)!.scorecard).recommendations.map(r => r.number), required);
+        }
         if (dispatch.stage === 'confirm') {
           const lines = [...args.output.matchAll(/^(\d+)\.\s+(PASS|FAIL)\s*[—-]\s*(.+)$/gm)];
           if (lines.length !== run.fixes!.length || lines.some((l, i) => Number(l[1]) !== i + 1)) throw new Error('Confirmation needs exactly one numbered PASS/FAIL line per replacement.');

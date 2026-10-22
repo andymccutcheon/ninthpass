@@ -1,19 +1,19 @@
-# Ninth Pass
+# Silverquill
 
 **Site:** [ninthpass.amccutcheon.com](https://ninthpass.amccutcheon.com)
 
-[![npm](https://img.shields.io/npm/v/ninthpass)](https://www.npmjs.com/package/ninthpass)
 [![verify](https://github.com/andymccutcheon/ninthpass/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/ninthpass/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/ninthpass)](https://github.com/andymccutcheon/ninthpass/blob/main/LICENSE)
+[![license](https://img.shields.io/npm/l/silverquill)](https://github.com/andymccutcheon/ninthpass/blob/main/LICENSE)
 
 Five prompt-engineering skills and a durable optimization loop. Install the skills into
 your agent with one command, or run the whole pipeline from the terminal with a fresh
 process per stage.
 
-> **Release status:** Ninth Pass 2.0.0 is pending npm publication. The current npm package
-> is Promptzilla 1.x, the MCP server; use the source or the local build until 2.0.0 ships.
+> **Release status:** Silverquill 2.0.0 is pending npm publication. There is no `silverquill`
+> package on npm yet; the last published release is `promptzilla@1.0.0`, the old MCP server.
+> Use the source or the local build until 2.0.0 ships.
 
-Ninth Pass does not call a model API itself and stores no credentials. The worker you
+Silverquill does not call a model API itself and stores no credentials. The worker you
 choose — OpenCode, Claude Code or Codex — already has its own authentication.
 
 ## Quick start
@@ -22,12 +22,12 @@ Until 2.0.0 is on npm, clone and build. The commands below run from the reposito
 
 ```sh
 git clone https://github.com/andymccutcheon/ninthpass
-cd ninthpass && npm install && npm run build
+cd silverquill && npm install && npm run build
 node dist/cli.js install
 node dist/cli.js run --request "Write a prompt for a meeting-notes summarizer"
 ```
 
-Once 2.0.0 ships, `npx ninthpass install` and `npx ninthpass run` do the same two things
+Once 2.0.0 ships, `npx silverquill install` and `npx silverquill run` do the same two things
 without the clone.
 
 `install` copies the five skills into the agent hosts it detects. `run` executes the full
@@ -57,10 +57,10 @@ legacy folders (`tasker`, `metapod`, `judge-dredd`, `brian-spillner`, `prompt-pi
 when they are present. Use `--target`, `--dir` or `--dry-run` for control:
 
 ```sh
-npx ninthpass install --target all
-npx ninthpass install --target claude,opencode
-npx ninthpass install --dir ./.claude/skills
-npx ninthpass install --dry-run
+npx silverquill install --target all
+npx silverquill install --target claude,opencode
+npx silverquill install --dir ./.claude/skills
+npx silverquill install --dry-run
 ```
 
 The installed skills are `brief`, `compose`, `judge`, `revise` and
@@ -73,26 +73,26 @@ Full mode turns a rough request into a prompt, then scores and rewrites it until
 returns STOP at 9 or higher:
 
 ```sh
-npx ninthpass run --request "Write a prompt for a meeting-notes summarizer that returns five bullets"
+npx silverquill run --request "Write a prompt for a meeting-notes summarizer that returns five bullets"
 ```
 
 Optimize-only mode starts from a prompt you already have:
 
 ```sh
-npx ninthpass run --prompt ./prompt.md
+npx silverquill run --prompt ./prompt.md
 ```
 
 A trailing argument is shorthand for a Full request:
 
 ```sh
-npx ninthpass run "Write a prompt for a release-notes generator"
+npx silverquill run "Write a prompt for a release-notes generator"
 ```
 
 The default worker is `opencode`. Choose another and pass a model when you want one:
 
 ```sh
-npx ninthpass run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
-npx ninthpass run --request "..." --worker codex --model gpt-5
+npx silverquill run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
+npx silverquill run --request "..." --worker codex --model gpt-5
 ```
 
 Useful flags:
@@ -121,10 +121,10 @@ score stopped improving, the best scored candidate is written to
 resumable:
 
 ```sh
-npx ninthpass run --resume <run-id> --decision "Continue; resolve the count conflict first."
+npx silverquill run --resume <run-id> --decision "Continue; resolve the count conflict first."
 ```
 
-Every run also keeps a full record under `~/.ninthpass/runs/<run-id>/`: the original
+Every run also keeps a full record under `~/.silverquill/runs/<run-id>/`: the original
 input, each stage file, retries, scorecards, provenance and `run.json`. Use `--runs-dir`
 to relocate it.
 
@@ -140,7 +140,7 @@ isolation, not an attestation.
 | `codex` | `codex exec --skip-git-repo-check -` | Reads the packet from stdin |
 | `fixture` | in-process | Deterministic; used by the test suite |
 
-The worker must be installed and authenticated already. Ninth Pass never reads or stores
+The worker must be installed and authenticated already. Silverquill never reads or stores
 provider keys.
 
 ## Manual mode
@@ -150,13 +150,13 @@ run and prints the first dispatch; the agent executes `dispatch.instructions` wi
 `dispatch.input` and submits the exact output.
 
 ```sh
-npx ninthpass start --request "Write a prompt for a meeting-notes summarizer" --json
-npx ninthpass status <run-id>
-npx ninthpass submit <run-id> --dispatch <dispatch-id> --output ./stage-output.md
-npx ninthpass pause <run-id> --reason "Need a user decision"
-npx ninthpass resume <run-id> --decision "Keep the current structure"
-npx ninthpass fix <run-id> --old "notes" --new "meeting notes"
-npx ninthpass export <run-id> --out ./prompts
+npx silverquill start --request "Write a prompt for a meeting-notes summarizer" --json
+npx silverquill status <run-id>
+npx silverquill submit <run-id> --dispatch <dispatch-id> --output ./stage-output.md
+npx silverquill pause <run-id> --reason "Need a user decision"
+npx silverquill resume <run-id> --decision "Keep the current structure"
+npx silverquill fix <run-id> --old "notes" --new "meeting notes"
+npx silverquill export <run-id> --out ./prompts
 ```
 
 `status --json` includes the active dispatch, so the packet can be handed to a fresh
@@ -215,7 +215,7 @@ output. It does not prove that a particular prompt is good; Judge can legitimate
 ## Library use
 
 ```ts
-import { Catalog, Pipeline, executeRun, createWorker } from 'ninthpass';
+import { Catalog, Pipeline, executeRun, createWorker } from 'silverquill';
 
 const pipeline = new Pipeline(await Catalog.load('./skills'), './runs');
 const result = await executeRun({
@@ -232,7 +232,7 @@ manual orchestration. `Catalog` discovers and validates skill folders.
 
 ## Package and release
 
-The package publishes to npm as [`ninthpass`](https://www.npmjs.com/package/ninthpass).
+The package publishes to npm as [`silverquill`](https://www.npmjs.com/package/silverquill).
 Bump `version`, run `npm run check`, then `npm publish --access public`, or trigger the
 **publish** GitHub Actions workflow.
 
@@ -248,13 +248,13 @@ Bump `version`, run `npm run check`, then `npm publish --access public`, or trig
 
 ## Migrating from 1.x
 
-Version 1.x was Promptzilla, an MCP server. Version 2 is Ninth Pass, a CLI and a library.
+Version 1.x was Promptzilla, an MCP server. Version 2 is Silverquill, a CLI and a library.
 
 1. Remove the `promptzilla` entry from your MCP client configuration.
-2. Run `npx ninthpass install`.
-3. Use `npx ninthpass run ...` or the installed skills directly.
+2. Run `npx silverquill install`.
+3. Use `npx silverquill run ...` or the installed skills directly.
 4. Old runs live under `~/.promptzilla-mcp/runs`; read one with
-   `--runs-dir ~/.promptzilla-mcp/runs`. New runs default to `~/.ninthpass/runs`.
+   `--runs-dir ~/.promptzilla-mcp/runs`. New runs default to `~/.silverquill/runs`.
 5. The Cloudflare Worker, HTTP transport and MCP-specific tools, prompts and resources are
    gone. The durable pipeline engine and all five skills remain.
 

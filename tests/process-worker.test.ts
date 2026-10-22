@@ -9,7 +9,7 @@ const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
 
 async function shim(name: string, body: string): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), 'ninthpass-shim-'));
+  const directory = await mkdtemp(join(tmpdir(), 'silverquill-shim-'));
   roots.push(directory);
   const path = join(directory, name);
   await writeFile(path, body);

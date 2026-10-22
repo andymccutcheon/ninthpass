@@ -33,7 +33,9 @@ CONTEXT:
 [TBD]
 `;
 export function judge(score: number, verdict = score >= 9 ? 'STOP' : 'CONTINUE') {
-  return `Section Ratings\n- Clarity: ${score}/10 — contains "notes".\n\nOverall Rating: ${score}/10 — evidence reviewed.\n\nVerdict: ${verdict}\n\nRecommendations\n1. Replace "notes" → "meeting notes".\n2. Preserve "[TBD]".\n3. Preserve the review gate.\n`;
+  const lower = Math.max(0, score - 0.5);
+  const higher = Math.min(10, score + 0.5);
+  return `Section Ratings\n- Clarity: ${lower}/10 — contains "notes".\n- Structure: ${score}/10 — the three required sections are present.\n- Delivery: ${higher}/10 — the gate is stated.\n\nOverall Rating: ${score.toFixed(2)}/10 — the mean of the section ratings.\n\nVerdict: ${verdict}\n\nRecommendations\n1. Replace "notes" → "meeting notes".\n2. Preserve "[TBD]".\n3. Preserve the review gate.\n`;
 }
 export function rewrite(body: string, deferred = false) {
   return `<!-- BEGIN BODY -->${body}<!-- END BODY -->\nRec-application checklist\n1. APPLIED — role\n2. ${deferred ? 'DEFERRED — needs user choice' : 'APPLIED — placeholder'}\n3. APPLIED — gate\n`;

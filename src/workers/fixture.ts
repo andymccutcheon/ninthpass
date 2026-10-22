@@ -41,10 +41,14 @@ function scorecard(score: number): string {
   const recommendations = score >= 9
     ? '1. Preserve the review gate.'
     : '1. Replace "notes" → "meeting notes".\n2. Preserve "[TBD]".\n3. Preserve the review gate.';
+  const lower = Math.max(0, Math.round((score - 0.5) * 10) / 10);
+  const higher = Math.min(10, Math.round((score + 0.5) * 10) / 10);
   return `Section Ratings
-- Clarity: ${score}/10 — contains "notes".
+- Clarity: ${lower}/10 — contains "notes".
+- Structure: ${score}/10 — the three required sections are present.
+- Delivery: ${higher}/10 — the gate is stated.
 
-Overall Rating: ${score}/10 — evidence reviewed.
+Overall Rating: ${score.toFixed(2)}/10 — the mean of the section ratings.
 
 Verdict: ${verdict}
 

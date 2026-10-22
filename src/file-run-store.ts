@@ -70,3 +70,14 @@ export class FileRunStore implements RunStore {
     });
   }
 }
+
+/**
+ * Read a run directory without taking a lock, materialising artifacts, or writing
+ * anything. Used only for runs written before the rename, so historical records stay
+ * inspectable without ever being modified.
+ */
+export async function readRunDirectory(directory: string): Promise<Run> {
+  const path = join(resolve(directory), 'run.json');
+  const run = RunSchema.parse(JSON.parse(await regularText(path, MAX_STATE)));
+  return run;
+}

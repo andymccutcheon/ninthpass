@@ -7,7 +7,7 @@ description: Runs a prompt through Compose (generate), Judge (score) and Revise 
 
 Orchestrates three skills: `compose`, `judge` and `revise` (sibling folders: `../compose/SKILL.md`, `../judge/SKILL.md`, `../revise/SKILL.md`). It orchestrates only. It does not score, rewrite or generate prompts itself.
 
-> **Prefer the CLI when it is installed.** `ninthpass run --request "..."` implements this same workflow with durable run state, one fresh process per stage, and automatic Markdown export on STOP. Use this skill when you are orchestrating manually in a chat host that cannot run the CLI.
+> **Prefer the CLI when it is installed.** `silverquill run --request "..."` implements this same workflow with durable run state, one fresh process per stage, and automatic Markdown export on STOP. Use this skill when you are orchestrating manually in a chat host that cannot run the CLI.
 
 ## Modes
 

@@ -10,13 +10,13 @@ const exec = promisify(execFile);
 const cli = resolve('dist/cli.js');
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(path => rm(path, { recursive: true, force: true }))); });
-async function temp() { const path = await mkdtemp(join(tmpdir(), 'ninthpass-cli-')); roots.push(path); return path; }
+async function temp() { const path = await mkdtemp(join(tmpdir(), 'silverquill-cli-')); roots.push(path); return path; }
 function run(args: string[], options: { cwd?: string; env?: NodeJS.ProcessEnv } = {}) {
   return exec(process.execPath, [cli, ...args], { cwd: options.cwd ?? tmpdir(), ...(options.env ? { env: options.env } : {}) });
 }
 
 test('help, version, validate and list work from an arbitrary directory', async () => {
-  expect((await run(['--help'])).stdout).toContain('Usage: ninthpass <command>');
+  expect((await run(['--help'])).stdout).toContain('Usage: silverquill <command>');
   expect((await run(['--version'])).stdout).toBe('2.0.0\n');
   expect((await run(['validate'])).stdout).toContain('Validated 5 skills and 9 source assets');
   expect((await run(['--validate'])).stdout).toContain('Validated 5 skills');
@@ -101,7 +101,7 @@ test('fix applies an authorized Judge replacement and asks for diff confirmation
   await writeFile(promptFile, prompt);
   const started = JSON.parse((await run(['start', '--prompt', promptFile, '--runs-dir', runs, '--json'])).stdout);
 
-  const stop = 'Section Ratings\n- Clarity: 9/10 — contains "notes".\n\nOverall Rating: 9/10 — evidence reviewed.\n\nVerdict: STOP\n\nRecommendations\n1. Replace "notes" → "meeting notes".\n';
+  const stop = 'Section Ratings\n- Clarity: 8.5/10 — contains "notes".\n- Structure: 9/10 — the sections are present.\n- Delivery: 9.5/10 — the gate is stated.\n\nOverall Rating: 9.00/10 — the mean of the section ratings.\n\nVerdict: STOP\n\nRecommendations\n1. Replace "notes" → "meeting notes".\n';
   const scoreFile = join(root, 'score.md');
   await writeFile(scoreFile, stop);
   const completed = JSON.parse((await run(['submit', started.id, '--dispatch', started.dispatch.id, '--output', scoreFile, '--runs-dir', runs, '--json'])).stdout);
@@ -119,8 +119,8 @@ test('fix applies an authorized Judge replacement and asks for diff confirmation
 });
 
 test('bad flags, missing input and a missing catalog fail with a clear message', async () => {
-  await expect(run(['--unknown'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('ninthpass:') });
+  await expect(run(['--unknown'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('silverquill:') });
   await expect(run(['run'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('Supply --request') });
-  await expect(run(['validate'], { env: { ...process.env, NINTHPASS_SKILLS_DIR: '/does-not-exist' } })).rejects.toMatchObject({ code: 1 });
+  await expect(run(['validate'], { env: { ...process.env, SILVERQUILL_SKILLS_DIR: '/does-not-exist' } })).rejects.toMatchObject({ code: 1 });
   await expect(run(['install', '--target', 'nope'])).rejects.toMatchObject({ code: 1, stderr: expect.stringContaining('Unknown install target') });
 });

@@ -141,7 +141,7 @@ Finding from the smoke test: Brian's rewrite body is about 1,400 words, far past
 | 11 Deliverable Structure: complete rewrite (System and Task; frontmatter + body), ready to paste, not a diff/memo | Purpose; Rules → Deliverable Structure; Procedure 2 |
 | 11 Preserve every section scored ≥9 unless a rec changes it | Rules → Deliverable Structure; Procedure 4 |
 | 11 Implement ALL numbered recs; no drop/merge/summarize | Rules → Deliverable Structure; Procedure 3 |
-| 11 Toast-specific / product-specific facts accurate; invent none | Rules → Deliverable Structure, verbatim; Procedure 5 |
+| 11 Product-specific facts accurate; invent none | Rules → Deliverable Structure, verbatim; Procedure 5 |
 | 11 CUT rule (a)/(b), quoted CUT format, keep original otherwise | Rules → Deliverable Structure ("CUT rule"); Procedure 6; Output format |
 | 11 Rec-application checklist, APPLIED (where) / DEFERRED (reason), verifiable without guessing | Rules → Deliverable Structure; Procedure 8; Output format |
 
@@ -163,7 +163,7 @@ Finding from the smoke test: Brian's rewrite body is about 1,400 words, far past
 ### Flags and ambiguities
 
 - **750-token limit.** "Prompt length must not exceed 750 tokens" is kept as written. It applies to the prompt being rewritten. It conflicts with the pipeline's growth cap of about 15% on long prompts: any input already over 750 tokens cannot comply without cuts the CUT rule forbids. The orchestrator's brief decides which governs. The smoke test confirmed the conflict: the rewrite body came out at about 1,400 words.
-- **"Toast-specific"** is a leftover company name from the source's original deployment. Kept as written; read as "product-specific".
+- **Fixed 2026-10-21:** the procedure said "Toast-specific", a leftover company name from the source's original deployment. It now says "product-specific", and the purpose line no longer claims an effect on downstream agent performance.
 - **Objectives vs. deliverable.** §2 ("Suggest actionable optimizations"), §6 and the §9 examples describe advisory, analysis-style replies, while §11 requires a complete rewrite and "not an analysis memo". Both are kept. In the smoke test the subagent followed §11.
 
 ## DROPPED items

@@ -10,6 +10,7 @@ import { installSkills, bundledSkillsDirectory, INSTALL_TARGETS, type InstallTar
 import { executeRun, type OrchestratorEvent } from './orchestrator.js';
 import { Pipeline } from './pipeline.js';
 import type { Run } from './state.js';
+import { readRunDirectory } from './file-run-store.js';
 import type { Fix } from './validation.js';
 import { runView } from './view.js';
 import { VERSION } from './version.js';
@@ -17,9 +18,9 @@ import { createWorker, WORKER_NAMES, type WorkerName } from './workers/index.js'
 
 class CliError extends Error {}
 
-const HELP = `ninthpass ${VERSION}
+const HELP = `silverquill ${VERSION}
 
-Usage: ninthpass <command> [options]
+Usage: silverquill <command> [options]
 
 Skills
   install               Copy the five skills into detected agent skill directories
@@ -54,16 +55,16 @@ Run options
 
 Global
   --skills-dir PATH       Override the skill catalog
-  --runs-dir PATH         Override run storage (default: ~/.ninthpass/runs)
+  --runs-dir PATH         Override run storage (default: ~/.silverquill/runs)
   --json                  Machine-readable output
   --help, --version
 
 Examples
-  npx ninthpass install
-  npx ninthpass run --request "Write a prompt for a meeting-notes summarizer"
-  npx ninthpass run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
-  npx ninthpass test --live --worker opencode --model deepseek/deepseek-flash
-  npx ninthpass status <run-id>
+  npx silverquill install
+  npx silverquill run --request "Write a prompt for a meeting-notes summarizer"
+  npx silverquill run --prompt ./prompt.md --worker claude --model claude-sonnet-4-5
+  npx silverquill test --live --worker opencode --model deepseek/deepseek-flash
+  npx silverquill status <run-id>
 `;
 
 const OPTIONS = {
@@ -127,12 +128,22 @@ function parseTimeout(value: string | undefined): number {
   return Math.floor(timeout);
 }
 
+// Writes always go to the new root. Runs written under the old name are read in place,
+// read-only, so history stays inspectable and is never rewritten.
+function defaultRunsDir(): string {
+  return join(homedir(), '.silverquill', 'runs');
+}
+
+function legacyRunsDir(): string {
+  return join(homedir(), '.ninthpass', 'runs');
+}
+
 function runsDirectory(values: Values): string {
-  return resolve(values['runs-dir'] ?? process.env.NINTHPASS_RUNS_DIR ?? join(homedir(), '.ninthpass', 'runs'));
+  return resolve(values['runs-dir'] ?? process.env.SILVERQUILL_RUNS_DIR ?? process.env.NINTHPASS_RUNS_DIR ?? defaultRunsDir());
 }
 
 function skillsDirectory(values: Values): string {
-  return resolve(values['skills-dir'] ?? process.env.NINTHPASS_SKILLS_DIR ?? bundledSkillsDirectory());
+  return resolve(values['skills-dir'] ?? process.env.SILVERQUILL_SKILLS_DIR ?? process.env.NINTHPASS_SKILLS_DIR ?? bundledSkillsDirectory());
 }
 
 async function loadPipeline(values: Values): Promise<Pipeline> {
@@ -153,7 +164,7 @@ async function readStdin(): Promise<string> {
 
 function historyLine(run: Run): string {
   if (!run.history.length) return 'no scores yet';
-  return run.history.map(entry => `${entry.score} ${entry.verdict}`).join(', ');
+  return run.history.map(entry => `${entry.score.toFixed(2)} ${entry.verdict}`).join(', ');
 }
 
 function printRunSummary(run: Run, exported?: { path: string; approved: boolean }): void {
@@ -183,13 +194,13 @@ function progressHandler(values: Values): (event: OrchestratorEvent) => void {
       }
       const latest = event.run.history.at(-1);
       if (event.dispatch.stage === 'judge' && latest) {
-        process.stdout.write(`  judge: ${latest.score}/10 ${latest.verdict}\n`);
+        process.stdout.write(`  judge: ${latest.score.toFixed(2)}/10 ${latest.verdict}\n`);
       } else {
         process.stdout.write('  accepted\n');
       }
     } else if (event.type === 'paused') {
       process.stdout.write(`\nPaused: ${event.run.reason ?? 'a decision is required'}\n`);
-      process.stdout.write(`Resume with: ninthpass resume ${event.run.id} --decision "..."\n`);
+      process.stdout.write(`Resume with: silverquill resume ${event.run.id} --decision "..."\n`);
     } else if (event.type === 'finished' && !values['show-output']) {
       // The summary prints after executeRun returns.
     }
@@ -265,7 +276,7 @@ async function commandStart(values: Values, positionals: string[]): Promise<numb
     process.stdout.write(`Directory: ${join(runsDirectory(values), run.id)}\n`);
     if (run.dispatch) {
       process.stdout.write(`Next: ${run.dispatch.skill} (${run.dispatch.stage}), dispatch ${run.dispatch.id}\n`);
-      process.stdout.write(`Submit with: ninthpass submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
+      process.stdout.write(`Submit with: silverquill submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
     }
   }
   return 0;
@@ -326,8 +337,19 @@ async function commandRun(values: Values, positionals: string[]): Promise<number
 async function commandStatus(values: Values, positionals: string[]): Promise<number> {
   const id = requireValue(positionals[0], 'A run ID');
   const pipeline = await loadPipeline(values);
-  const run = await pipeline.status(id);
-  const view = runView(run, join(runsDirectory(values), run.id));
+  let run: Run;
+  let directory = join(runsDirectory(values), id);
+  let legacy = false;
+  try {
+    run = await pipeline.status(id);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    directory = join(legacyRunsDir(), id);
+    run = await readRunDirectory(directory);
+    legacy = true;
+  }
+  const view = runView(run, directory);
+  if (legacy) process.stderr.write('Legacy run (written before the rename): shown read-only. Resuming and updating it is not supported.\n');
   if (values.json) process.stdout.write(`${JSON.stringify(view, null, 2)}\n`);
   else {
     process.stdout.write(`Run ${run.id} — ${run.status} (${run.final?.approved ? 'approved' : run.final ? 'provisional' : 'no final'})\n`);
@@ -403,7 +425,7 @@ async function commandFix(values: Values, positionals: string[]): Promise<number
     printRunSummary(run);
     if (run.dispatch) {
       process.stdout.write(`Confirmation pending: ${run.dispatch.skill} (${run.dispatch.stage}), dispatch ${run.dispatch.id}\n`);
-      process.stdout.write(`Submit with: ninthpass submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
+      process.stdout.write(`Submit with: silverquill submit ${run.id} --dispatch ${run.dispatch.id} --output <file>\n`);
     }
   }
   return 0;
@@ -507,7 +529,7 @@ async function main(): Promise<number> {
     case 'fix': return commandFix(values, positionals.slice(1));
     case 'export': return commandExport(values, positionals.slice(1));
     case 'test': return commandTest(values);
-    default: throw new CliError(`Unknown command: ${command}. Run "ninthpass --help".`);
+    default: throw new CliError(`Unknown command: ${command}. Run "silverquill --help".`);
   }
 }
 
@@ -515,6 +537,6 @@ main()
   .then(code => { process.exitCode = code; })
   .catch(error => {
     const message = error instanceof Error ? error.message : 'Command failed.';
-    process.stderr.write(`ninthpass: ${message}\n`);
+    process.stderr.write(`silverquill: ${message}\n`);
     process.exitCode = 1;
   });
