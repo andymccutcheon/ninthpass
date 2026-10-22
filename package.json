@@ -34,10 +34,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andymccutcheon/ninthpass.git"
+    "url": "git+https://github.com/andymccutcheon/silverquill.git"
   },
-  "bugs": "https://github.com/andymccutcheon/ninthpass/issues",
-  "homepage": "https://github.com/andymccutcheon/ninthpass#readme",
+  "bugs": "https://github.com/andymccutcheon/silverquill/issues",
+  "homepage": "https://github.com/andymccutcheon/silverquill#readme",
   "publishConfig": {
     "access": "public"
   },

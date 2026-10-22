@@ -1,9 +1,9 @@
 # Silverquill
 
-**Site:** [ninthpass.amccutcheon.com](https://ninthpass.amccutcheon.com)
+**Site:** [silverquill.amccutcheon.com](https://silverquill.amccutcheon.com)
 
-[![verify](https://github.com/andymccutcheon/ninthpass/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/ninthpass/actions/workflows/ci.yml)
-[![license](https://img.shields.io/npm/l/silverquill)](https://github.com/andymccutcheon/ninthpass/blob/main/LICENSE)
+[![verify](https://github.com/andymccutcheon/silverquill/actions/workflows/ci.yml/badge.svg)](https://github.com/andymccutcheon/silverquill/actions/workflows/ci.yml)
+[![license](https://img.shields.io/npm/l/silverquill)](https://github.com/andymccutcheon/silverquill/blob/main/LICENSE)
 
 Five prompt-engineering skills and a durable optimization loop. Install the skills into
 your agent with one command, or run the whole pipeline from the terminal with a fresh
@@ -21,7 +21,7 @@ choose — OpenCode, Claude Code or Codex — already has its own authentication
 Until 2.0.0 is on npm, clone and build. The commands below run from the repository root.
 
 ```sh
-git clone https://github.com/andymccutcheon/ninthpass
+git clone https://github.com/andymccutcheon/silverquill
 cd silverquill && npm install && npm run build
 node dist/cli.js install
 node dist/cli.js run --request "Write a prompt for a meeting-notes summarizer"
@@ -197,7 +197,7 @@ text it started with, so editing a skill mid-run cannot change the current run.
 ## Testing
 
 ```sh
-npm test              # 59 unit, integration and CLI tests
+npm test              # 66 unit, integration and CLI tests
 npm run check         # build, type-check, coverage, Python helper tests
 npm run test:package  # pack, install into a clean directory, run the pipeline
 npm run test:live     # real model through the real three-skill pipeline
